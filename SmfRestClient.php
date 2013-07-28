@@ -48,6 +48,8 @@
     
  	
 */
+namespace SmfApi;
+
 
 define ('API_SERVER', 'http://www.yourdomain.com/path/to/api/'); //this will be the path to your api folder
 define ('API_DEBUG', false); //show the $_REQUEST sent by cURL
