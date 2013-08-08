@@ -1,0 +1,9 @@
+{
+    "name": "pc-freak/smfapi",
+    "license": "BSD",
+    "type": "project",
+    "description": "The \"Rest\" API for SMF (simplemachinesforum) ",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    }
+}
