@@ -370,7 +370,7 @@ class SmfRestServer
         $this->topicOptions = unserialize($this->topicOptions);
         $this->posterOptions = unserialize($this->posterOptions);
         
-        if (!isset($this->$topicOptions['board']) || !isset($this->$msgOptions['subject']) || !isset($this->$msgOptions['body'])) {
+        if (!isset($this->topicOptions['board']) || !isset($this->msgOptions['subject']) || !isset($this->msgOptions['body'])) {
            $this->data = 'false';
         } else {
             $this->data = createPost($this->msgOptions, $this->topicOptions, $this->posterOptions);
