@@ -48,7 +48,7 @@
     
  	
 */
-namespace SmfApi;
+namespace SmfApi\Client;
 
 
 define ('API_SERVER', 'http://www.yourdomain.com/path/to/api/'); //this will be the path to your api folder
