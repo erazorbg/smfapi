@@ -51,9 +51,6 @@
 namespace SmfApi\Client;
 
 
-define ('API_SERVER', 'http://www.yourdomain.com/path/to/api/'); //this will be the path to your api folder
-define ('API_DEBUG', false); //show the $_REQUEST sent by cURL
-
 if (!function_exists('curl_init'))  throw new Exception('SMF API Client Library requires the cURL PHP extension.');
 if (!function_exists('json_decode')) throw new Exception('SMF API Client Library requires the JSON PHP extension.');
 
@@ -64,15 +61,18 @@ class SmfRestClient
     private $sessionId;
     private $cookieFile;
     private $userAuth = array();
+    private $apiServerUrl = null;
+    private $apiDebug = null;
 
     /**
      * Construct magic method
      */
-    public function __construct($secretKey = null, $format = 'json')
+    public function __construct($apiServerUrl, $secretKey = null, $format = 'json', $apiDebug = false)
     {
         $this->secretKey = $secretKey;
         $this->format    = $format;
-
+        $this->apiServerUrl = $apiServerUrl;
+        $this->apiDebug = $apiDebug;
         // when not requesting raw data lets automatically use json, for easier decoding to object
         if ('json' != $this->format) {
             $this->format = 'raw';
@@ -132,16 +132,19 @@ class SmfRestClient
         if ('' == session_id()) {
              session_start();
         }
-
+        $this->save_path = sys_get_temp_dir();
         // build the 'cookie' filename and path
-        $this->save_path  = dirname(__FILE__) . '/session';
+        if(!($cookieFile  = tempnam($this->save_path, "sess_")))
+        {
+          throw new \Exception("cannot generate a session file");
+        }
         $this->sessionId  = session_id();
-        $cookieFile       = $this->save_path . '/sess_' . $this->sessionId . '.txt';
+       // $cookieFile       = $this->save_path . '/sess_' . $this->sessionId . '.txt';
         $this->cookieFile = $cookieFile;
     
-        $url = API_SERVER . "$request";
+        $url = $this->apiServerUrl . "$request";
 
-        if (API_DEBUG) {
+        if ($this->apiDebug) {
             echo "REQUEST: $url?" . http_build_query($params);
         }
 
@@ -154,7 +157,7 @@ class SmfRestClient
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $rawData = curl_exec($ch);
         curl_close($ch);
-
+        
         if ('raw' == $this->format) {
             return $rawData;
         } else {
