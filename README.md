@@ -1,4 +1,4 @@
-Simple Machines Forum(SMF) 'REST' API for SMF 2.0
+REST API for Simple Machines Forum (SMF) 2.0
 ====================================================
 
 **Note:** This is a fork of the SMF REST API by Andre Nickatina. Our intention is to upgrade and maintain the API.
@@ -78,7 +78,7 @@ RewriteRule .* index.php [L]
 ``` php 
 define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
 ```
-*Hint:* You may generate a key with a bash command like:
+*Hint:* You may generate a key under Linux with a bash command like:
 
 ``` bash 
 dd if=/dev/urandom bs=8 count=8 | openssl base64 | tr -d '\n'
