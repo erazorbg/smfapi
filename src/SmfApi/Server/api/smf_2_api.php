@@ -558,6 +558,11 @@ if (function_exists('set_magic_quotes_runtime')) {
 
 $time_start = microtime();
 
+// Without visiting the forum this session variable might not be set on submit.
+if (!isset($_SESSION['USER_AGENT'])) {
+	$_SESSION['USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
+}
+
 // just being safe...
 foreach (array('db_character_set', 'cachedir') as $variable) {
 	if (isset($GLOBALS[$variable])) {
@@ -565,20 +570,34 @@ foreach (array('db_character_set', 'cachedir') as $variable) {
     }
 }
 
+// if we have a saved settings location, try to load it first
 $saveFile = dirname(__FILE__) . '/smfapi_settings.txt';
+$settings_path = '';
 if (file_exists($saveFile)) {
     $settings_path = base64_decode(file_get_contents($saveFile));
+    // if it's fouled delete it
+    if (!file_exists($settings_path)) {
+        unlink($saveFile);
+        unset($settings_path);
+    }
 }
 
-// specify the settings path here if it's not in smf root and you want to speed things up
-//$settings_path = $_SERVER['DOCUMENT_ROOT'] . /path/to/Settings.php
+// manually add the location of your Settings.php here
+if (!isset($settings_path) || empty($settings_path)) {
+    // specify the settings path here if it's not in smf root and you want to speed things up
+    // $settings_path = $_SERVER['DOCUMENT_ROOT'] . /path/to/Settings.php
+    if (isset($settings_path) && !file_exists($settings_path)) {
+        unset($settings_path);
+    }
+}
 
-// get the forum's settings for database and file paths
-if (file_exists(dirname(__FILE__) . '/Settings.php')) {
-    require_once(dirname(__FILE__) . '/Settings.php');
-} elseif (isset($settings_path)) {
-    require_once($settings_path);
-} else {
+// check locally
+if ((!isset($settings_path) || empty($settings_path)) && file_exists(dirname(__FILE__) . '/Settings.php')) {
+    $settings_path = dirname(__FILE__) . '/Settings.php';
+}
+
+// try to find it
+if (!isset($settings_path) || empty($settings_path)) {
     $directory = $_SERVER['DOCUMENT_ROOT'] . '/';
     $exempt = array('.', '..');
     $files = smfapi_getDirectoryContents($directory, $exempt);
@@ -592,18 +611,22 @@ if (file_exists(dirname(__FILE__) . '/Settings.php')) {
     }
 
     if (1 == count($matches)) {
-        require_once($matches[0]);
         $settings_path = $matches[0];
-        file_put_contents($saveFile, base64_encode($settings_path));
     } elseif (1 < count($matches)) {
         $matches = smfapi_getMatchingFile($files, 'Settings_bak.php');
         $matches[0] = str_replace('_bak.php', '.php', $matches[0]);
-        require_once($matches[0]);
         $settings_path = $matches[0];
-        file_put_contents($saveFile, base64_encode($settings_path));
     } else {
-        return false;
+        exit('Unable to load SMF settings file');
     }
+}
+
+// include the settings file
+require_once($settings_path);
+
+// save the settings file for future reference
+if (!file_exists($saveFile)) {
+    file_put_contents($saveFile, base64_encode($settings_path));
 }
 
 $scripturl = $boardurl . '/index.php';
@@ -699,7 +722,7 @@ function smfapi_getUserByEmail($email='')
  *
  * @param  int $id the user's member id
  * @return array $results containing the user info || bool false
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_getUserById($id='')
 {
@@ -708,8 +731,8 @@ function smfapi_getUserById($id='')
     if ('' == $id || !is_numeric($id)) {
         return false;
     } else{
-        $id += 0;
-        if (!is_int($id)) {
+        $id = intval($id);
+        if (0 == $id) {
             return false;
         }
     }
@@ -779,7 +802,7 @@ function smfapi_getUserByUsername($username='')
  *
  * @param  int || string $username the user's email address username or member id
  * @return array $results containing the user info || bool false
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_getUserData($username='')
 {
@@ -794,11 +817,11 @@ function smfapi_getUserData($username='')
         // number is most likely a member id
         $user_data = smfapi_getUserById($username);
     } else {
-        // the email can't be an int
+        // the email can't be purely numeric
         $user_data = smfapi_getUserByEmail($username);
     }
 
-    if (!$user_data) {
+    if (empty($user_data)) {
         $user_data = smfapi_getUserByUsername($username);
     }
 
@@ -820,20 +843,16 @@ function smfapi_getUserData($username='')
  * @param  string $username (or int member id or string email. We're not picky)
  * @param  int $cookieLength length to set the cookie for (in minutes)
  * @return bool whether the login cookie was set or not
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_login($username='', $cookieLength=525600)
 {
     global $scripturl, $user_info, $user_settings, $smcFunc;
 	global $cookiename, $maintenance, $modSettings, $sc, $sourcedir;
 
-    if (1 == $maintenance || '' == $username) {
-	    return false;
-    }
-
     $user_data = smfapi_getUserData($username);
 
-    if (!$user_data) {
+    if (!$user_data || empty($user_data)) {
         return false;
     }
 
@@ -869,7 +888,7 @@ function smfapi_login($username='', $cookieLength=525600)
  * @param  bool $encrypted whether the password is encrypted or not. If you get
            this wrong we'll figure it out anyways, just saves some work if it's right
  * @return bool whether the user is authenticated or not
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_authenticate($username='', $password='', $encrypted=true)
 {
@@ -985,7 +1004,8 @@ function smfapi_authenticate($username='', $password='', $encrypted=true)
 
 			// perhaps we converted to UTF-8 and have a valid password being
             // hashed differently
-			if (!empty($modSettings['previousCharacterSet'])
+			if (isset($context['character_set']) && $context['character_set'] == 'utf8'
+                && !empty($modSettings['previousCharacterSet'])
                 && $modSettings['previousCharacterSet'] != 'utf8') {
 
 				// try iconv first, for no particular reason
@@ -1027,31 +1047,40 @@ function smfapi_authenticate($username='', $password='', $encrypted=true)
  * Will log out a user
  *
  * Takes a username, email or member id and logs that user out. If it can't find
- * a match it will look for the currently logged user if any.
+ * a match it will look for the currently logged user if any. Best to leave this
+ * function's arguments empty. If logoutis failing, make sure your SMF cookie is
+ * being set on path '/', otherwise we can't delete it. Also, try leaving the
+ * function parameter empty to let the script auto-detect the currently logged in
+ * user for you.
  *
  * @param  string $username user's member name (or int member id or string email)
  * @return bool whether logout was successful or not
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_logout($username='')
 {
-    global $sourcedir, $user_info, $user_settings, $context, $modSettings, $smcFunc;
+    global $user_info, $smcFunc;
 
-    if ('' == $username && $user_info['is_guest']) {
-        return false;
+    if ($user_info['is_guest']) {
+        smfapi_loadUserSettings();
+    }
+
+    if ('' == $username) {
+        if ($user_info['is_guest']) {
+            return false;
+        } else {
+            $username = $user_info['username'];
+        }
     }
 
     $user_data = smfapi_getUserData($username);
 
-    if (!$user_data) {
-        if (isset($user_info['id_member']) && false !== smfapi_getUserById($user_info['id_member'])) {
-            $user_data['id_member'] = $user_info['id_member'];
-        } else {
-            return false;
-        }
+    if (!$user_data || empty($user_data)) {
+        // no user by that name
+        return false;
     }
 
-    // if you log out, you aren't online anymore :P.
+    // delete them from log_online
     $smcFunc['db_query']('', '
         DELETE FROM {db_prefix}log_online
         WHERE id_member = {int:current_member}',
@@ -1070,8 +1099,11 @@ function smfapi_logout($username='')
     }
 
 	// it won't be first login anymore.
-	unset($_SESSION['first_login']);
+	if (isset($_SESSION['openid'])) {
+	    unset($_SESSION['first_login']);
+    }
 
+    // destroy the cookie
 	smfapi_setLoginCookie(-3600, 0);
 
     return true;
@@ -1084,7 +1116,7 @@ function smfapi_logout($username='')
  *
  * @param  int || int array $users the member id(s)
  * @return bool true when complete or false if user array empty
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_deleteMembers($users)
 {
@@ -1107,7 +1139,7 @@ function smfapi_deleteMembers($users)
     foreach ($users as &$user) {
         if (!is_int($user)) {
             $data = smfapi_getUserData($user);
-            $user = $data['id_member'] + 0;
+            $user = intval($data['id_member']);
         }
     }
 
@@ -1407,7 +1439,7 @@ function smfapi_deleteMembers($users)
  *
  * @param  array $regOptions the registration options
  * @return int $memberId the user's member id || bool false
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_registerMember($regOptions)
 {
@@ -1439,10 +1471,6 @@ function smfapi_registerMember($regOptions)
 	// generate a validation code if it's supposed to be emailed
 	// unless there was one passed in for us to use
 	$validation_code = '';
-	if (!isset($regOptions['require']) || empty($regOptions['require'])) {
-        //we need to set it to something...
-        $regOptions['require'] = 'nothing';
-	}
 	if ($regOptions['require'] == 'activation') {
         if (isset($regOptions['validation_code'])) {
 		    $validation_code = $regOptions['validation_code'];
@@ -1451,18 +1479,16 @@ function smfapi_registerMember($regOptions)
 		}
     }
 
-    if (!isset($regOptions['password_check']) || empty($regOptions['password_check'])) {
-        //make them match if the check wasn't set or it will fail the comparison below
-        $regOptions['password_check'] = $regOptions['password'];
-    }
-	if ($regOptions['password'] != $regOptions['password_check']) {
-        $reg_errors[] = 'password check failed';
-    }
-
-	// password empty is an error
-	if ('' == $regOptions['password']) {
+    // password empty is an error
+	if (!isset($regOptions['password']) || '' == $regOptions['password']) {
         $reg_errors[] = 'password empty';
 	}
+
+	// make them match if they don't
+	if (!isset($regOptions['password_check']) || $regOptions['password'] != $regOptions['password_check']) {
+        // we'll make them match ;)
+        $regOptions['password_check'] = $regOptions['password'];
+    }
 
 	// if there's any errors left return them at once
 	if (!empty($reg_errors)) {
@@ -1477,35 +1503,35 @@ function smfapi_registerMember($regOptions)
 		'password_salt' => substr(md5(mt_rand()), 0, 4) ,
 		'posts' => 0,
 		'date_registered' => time(),
-		'member_ip' => $user_info['ip'],
-		'member_ip2' => isset($_SERVER['BAN_CHECK_IP'])?$_SERVER['BAN_CHECK_IP']:'',
+		'member_ip' => isset($user_info['ip'])? $user_info['ip']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
+		'member_ip2' => isset($_SERVER['BAN_CHECK_IP'])? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
 		'validation_code' => $validation_code,
-		'real_name' => isset($regOptions['real_name'])?$regOptions['real_name']:$regOptions['member_name'],
+		'real_name' => isset($regOptions['real_name'])? $regOptions['real_name']:$regOptions['member_name'],
 		'personal_text' => $modSettings['default_personal_text'],
 		'pm_email_notify' => 1,
 		'id_theme' => 0,
 		'id_post_group' => 4,
-		'lngfile' => isset($regOptions['lngfile'])?$regOptions['lngfile']:'',
+		'lngfile' => isset($regOptions['lngfile'])? $regOptions['lngfile']:'',
 		'buddy_list' => '',
 		'pm_ignore_list' => '',
 		'message_labels' => '',
-		'website_title' => isset($regOptions['website_title'])?$regOptions['website_title']:'',
-		'website_url' => isset($regOptions['website_url'])?$regOptions['website_url']:'',
-		'location' => isset($regOptions['location'])?$regOptions['location']:'',
-		'icq' => isset($regOptions['icq'])?$regOptions['icq']:'',
-		'aim' => isset($regOptions['aim'])?$regOptions['aim']:'',
-		'yim' => isset($regOptions['yim'])?$regOptions['yim']:'',
-		'msn' => isset($regOptions['msn'])?$regOptions['msn']:'',
-		'time_format' => isset($regOptions['time_format'])?$regOptions['time_format']:'',
-		'signature' => isset($regOptions['signature'])?$regOptions['signature']:'',
-		'avatar' => isset($regOptions['avatar'])?$regOptions['avatar']:'',
+		'website_title' => isset($regOptions['website_title'])? $regOptions['website_title']:'',
+		'website_url' => isset($regOptions['website_url'])? $regOptions['website_url']:'',
+		'location' => isset($regOptions['location'])? $regOptions['location']:'',
+		'icq' => isset($regOptions['icq'])? $regOptions['icq']:'',
+		'aim' => isset($regOptions['aim'])? $regOptions['aim']:'',
+		'yim' => isset($regOptions['yim'])? $regOptions['yim']:'',
+		'msn' => isset($regOptions['msn'])? $regOptions['msn']:'',
+		'time_format' => isset($regOptions['time_format'])? $regOptions['time_format']:'',
+		'signature' => isset($regOptions['signature'])? $regOptions['signature']:'',
+		'avatar' => isset($regOptions['avatar'])? $regOptions['avatar']:'',
 		'usertitle' => '',
-		'secret_question' => isset($regOptions['secret_question'])?$regOptions['secret_question']:'',
-		'secret_answer' => isset($regOptions['secret_answer'])?$regOptions['secret_answer']:'',
+		'secret_question' => isset($regOptions['secret_question'])? $regOptions['secret_question']:'',
+		'secret_answer' => isset($regOptions['secret_answer'])? $regOptions['secret_answer']:'',
 		'additional_groups' => '',
 		'ignore_boards' => '',
 		'smiley_set' => '',
-		'openid_uri' => isset($regOptions['openid_uri'])?$regOptions['openid_uri']:'',
+		'openid_uri' => isset($regOptions['openid_uri'])? $regOptions['openid_uri']:'',
 	);
 
 	// maybe it can be activated right away?
@@ -1631,7 +1657,7 @@ function smfapi_registerMember($regOptions)
  * @param  string $file the file to reference in the log, if any. Use __FILE__
  * @param  int $line the line number to reference in the log, if any. Use __LINE__
  * @return bool true if successful, false if error logging is disabled
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_logError($error_message, $error_type = 'general', $file = null, $line = null)
 {
@@ -1666,7 +1692,7 @@ function smfapi_logError($error_message, $error_type = 'general', $file = null, 
 		$user_info['id'] = 0;
     }
 	if (empty($user_info['ip'])) {
-		$user_info['ip'] = '';
+		$user_info['ip'] = $_SERVER['REMOTE_ADDR'];
     }
 
 	// find the best query string we can...
@@ -1851,20 +1877,23 @@ function smfapi_reloadSettings()
  * Will take the user's member id and load the handy $user_info array. If no
  * user id is supplied, it will try the cookie, then the session to get a user id.
  * If that fails, the $user_info array will contain the fallback data for guests.
+ * Will try to fix magic quotes.
  *
- * @param  int $id_member the member id
  * @return bool true when complete, failure is not an option
- * @since  0.1.0
+ * @since  0.1.2
  */
-function smfapi_loadUserSettings($id_member=0)
+function smfapi_loadUserSettings()
 {
 	global $modSettings, $user_settings, $sourcedir, $smcFunc;
 	global $cookiename, $user_info, $language;
+	
+	$id_member = 0;
 
     if (0 == $id_member && isset($_COOKIE[$cookiename])) {
+        $cookieData = stripslashes($_COOKIE[$cookiename]);
 		// fix a security hole in PHP 4.3.9 and below...
-		if (preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~i', $_COOKIE[$cookiename]) == 1) {
-			list ($id_member, $password) = @unserialize($_COOKIE[$cookiename]);
+		if (preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~i', $cookieData) == 1) {
+			list ($id_member, $password) = @unserialize($cookieData);
 			$id_member = !empty($id_member) && strlen($password) > 0 ? (int) $id_member : 0;
 		} else {
 			$id_member = 0;
@@ -1873,6 +1902,17 @@ function smfapi_loadUserSettings($id_member=0)
 		// !!! perhaps we can do some more checking on this, such as on the first octet of the IP?
 		list ($id_member, $password, $login_span) = @unserialize($_SESSION['login_' . $cookiename]);
 		$id_member = !empty($id_member) && strlen($password) == 40 && $login_span > time() ? (int) $id_member : 0;
+	}
+	
+	if (0 == $id_member) {
+        $unserializedData = array();
+        $success = funserialize($cookieData, $unserializedData);
+        if ($success) {
+            $id_member = $unserializedData[0];
+            $password  = $unserializedData[1];
+        } else {
+            // they're either a guest or your cookie is not visible
+        }
 	}
 
 	// only load this stuff if the user isn't a guest.
@@ -1944,8 +1984,8 @@ function smfapi_loadUserSettings($id_member=0)
 		'is_admin' => in_array(1, $user_info['groups']),
 		'theme' => empty($user_settings['id_theme']) ? 0 : $user_settings['id_theme'],
 		'last_login' => empty($user_settings['last_login']) ? 0 : $user_settings['last_login'],
-		'ip' => $_SERVER['REMOTE_ADDR'],
-		'ip2' => isset($_SERVER['BAN_CHECK_IP']) ? $_SERVER['BAN_CHECK_IP']: '',
+		'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
+		'ip2' => isset($_SERVER['BAN_CHECK_IP']) ? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
 		'posts' => empty($user_settings['posts']) ? 0 : $user_settings['posts'],
 		'time_format' => empty($user_settings['time_format']) ? $modSettings['time_format'] : $user_settings['time_format'],
 		'time_offset' => empty($user_settings['time_offset']) ? 0 : $user_settings['time_offset'],
@@ -2645,7 +2685,7 @@ function smfapi_updateSettings($changeArray, $update = false, $debug = false)
  * @param  int $id the user's member id
  * @param  string $password the password already hashed with SMF's encryption
  * @return true on completion
- * @since  0.1.0
+ * @since  0.1.2
  */
 function smfapi_setLoginCookie($cookie_length, $id, $password = '')
 {
@@ -2658,8 +2698,9 @@ function smfapi_setLoginCookie($cookie_length, $id, $password = '')
 	$cookie_state = (empty($modSettings['localCookies']) ? 0 : 1) | (empty($modSettings['globalCookies']) ? 0 : 2);
 
 	if (isset($_COOKIE[$cookiename])
-        && preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~', $_COOKIE[$cookiename]) === 1) {
-		$array = @unserialize($_COOKIE[$cookiename]);
+        && preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~', stripslashes($_COOKIE[$cookiename])) === 1) {
+        $cookieData = stripslashes($_COOKIE[$cookiename]);
+		$array = @unserialize($cookieData);
 
 		// out with the old, in with the new
 		if (isset($array[3]) && $array[3] != $cookie_state) {
@@ -3152,7 +3193,7 @@ function smfapi_logOnline($username='')
               $user_data['id_member'],
               0,
               time(),
-              'IFNULL(INET_ATON(\'' . (isset($user_data['ip']) ? $user_data['ip'] : '') . '\'), 0)',
+              'IFNULL(INET_ATON(\'' . $user_data['ip'] . '\'), 0)',
               ''),
         array('session')
     );
@@ -3249,4 +3290,23 @@ function smfapi_getDirectoryContents($directory, $exempt = array('.', '..'), &$f
 
     return $files;
 }
-?>
+
+/**
+ * A replacement for unserialize that returns whether it worked and
+ * populates the unserialized variable by reference.
+ *
+ * @author walf
+ * @link   http://www.php.net/manual/pt_BR/function.unserialize.php#105500
+ * @param  string $serialized the serialized data
+ * @param  array $into the variable to hold the unserialized array
+ * @return bool whether the data was unserialized or not
+ * @since  0.1.2
+ */
+function funserialize($serialized, &$into) {
+    static $sfalse;
+    if ($sfalse === null)
+        $sfalse = serialize(false);
+    $into = @unserialize($serialized);
+    return $into !== false || rtrim($serialized) === $sfalse;
+    //whitespace at end of serialized var is ignored by PHP
+}

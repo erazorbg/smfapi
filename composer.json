@@ -4,6 +4,6 @@
     "type": "project",
     "description": "The \"Rest\" API for SMF (simplemachinesforum) ",
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-0": { "SmfApi": "src/" }
     }
 }
