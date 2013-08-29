@@ -45,8 +45,9 @@ php composer update
 
 ## Configuration
 
-### 1. Upload the content of the Server folder to your SMF installation folder
-### 2. __(optional)__ Change the path to your Settings.php
+  * Upload the content of the Server folder to your SMF installation folder
+  * __(optional)__ Change the path to your `Settings.php`
+
 ``` php 
 
 //path/to/your/smf/api/folder/smf_2_api.php
@@ -62,7 +63,7 @@ if (!isset($settings_path) || empty($settings_path)) {
 
 ```
 
-### 3. __(optional)__ In case you use nginx as webserver configure it to emulate the .htaccess
+  * __(optional)__ In case you use nginx as webserver configure it to emulate the `.htaccess`
 
 ``` bash
 Satisfy Any
@@ -72,14 +73,16 @@ RewriteEngine on
 RewriteRule .* index.php [L]
  
 ```
-### 4. Set an API key in the `SmfRestServer.php` file:
+  * Set an API key in the `SmfRestServer.php` file:
 
 ``` php 
 define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
 ```
-Hint: You may generate a key with a bash command like:
+*Hint:* You may generate a key with a bash command like:
 
-    dd if=/dev/urandom bs=8 count=8 | openssl base64 | tr -d '\n'
+``` bash 
+dd if=/dev/urandom bs=8 count=8 | openssl base64 | tr -d '\n'
+```
 
 ## Usage
 
