@@ -43,7 +43,7 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT   *
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
  **********************************************************************************/
-namespace SmfApi;
+namespace SmfApi\Server;
 define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
 
 class SmfRestServer
@@ -370,7 +370,7 @@ class SmfRestServer
         $this->topicOptions = unserialize($this->topicOptions);
         $this->posterOptions = unserialize($this->posterOptions);
         
-        if (!isset($this->$topicOptions['board']) || !isset($this->$msgOptions['subject']) || !isset($this->$msgOptions['body'])) {
+        if (!isset($this->topicOptions['board']) || !isset($this->msgOptions['subject']) || !isset($this->msgOptions['body'])) {
            $this->data = 'false';
         } else {
             $this->data = createPost($this->msgOptions, $this->topicOptions, $this->posterOptions);
