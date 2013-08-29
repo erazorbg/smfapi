@@ -16,25 +16,26 @@ software, feel free to contact andre@r2bconcepts.com
  * @license   http://www.simplemachines.org/about/smf/license.php BSD
  * @version   0.1.2
 
-## Installation with [composer](http://getcomposer.org)
+## Installation using [composer](http://getcomposer.org)
  
- add this to your composer.json file:
+Add the following to your `composer.json` file:
+
 ``` json
 "require": 
 {
-        "pc-freak/smfapi": "dev-master"
+	"pc-freak/smfapi": "dev-master"
 },
 "repositories": 
 [
 	{
-            "type": "vcs",
-            "url" : "https://github.com/pc-freak/smapi.git"
+	    "type": "vcs",
+	    "url" : "https://github.com/pc-freak/smapi.git"
 	}
 ]
 
 ```
 
-run 
+Update dependencies:
 
 ``` bash
 
@@ -44,7 +45,7 @@ php composer update
 
 ## Configuration
 
-### 1. Upload the content of the Server folder on your SMF installation folder
+### 1. Upload the content of the Server folder to your SMF installation folder
 ### 2. __(optional)__ Change the path to your Settings.php
 ``` php 
 
@@ -71,11 +72,14 @@ RewriteEngine on
 RewriteRule .* index.php [L]
  
 ```
-### 4. set your api key in the SmfRestServer
+### 4. Set an API key in the `SmfRestServer.php` file:
 
 ``` php 
 define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
 ```
+Hint: You may generate a key with a bash command like:
+
+    dd if=/dev/urandom bs=8 count=8 | openssl base64 | tr -d '\n'
 
 ## Usage
 
