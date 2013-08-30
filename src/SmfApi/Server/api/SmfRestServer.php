@@ -44,7 +44,6 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
  **********************************************************************************/
 namespace SmfApi\Server;
-define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
 
 class SmfRestServer
 {
@@ -64,21 +63,22 @@ class SmfRestServer
      * @param
      * @return
      */
-    public function __construct($request)
+    public function __construct($request, $apiKey)
     {
+        // Here we get the $secretKey
         foreach ($request as $k => $v) {
             $this->$k = $v;
         }
         
         $this->getRoute()->getMethod();
-        if ($this->validateSecretKey()) {
+        if ($this->validateSecretKey($apiKey)) {
             try {
                 $this->callMethod();
             } catch (Exception $e) {
                 $this->error = $e->getMessage();
             }
         } else {
-            $this->error = 'Secret Key invalid';
+            $this->error = 'Invalid secret (API) key!';
         }
 
         $this->renderOutput();
@@ -254,12 +254,9 @@ class SmfRestServer
      * @param
      * @return
      */
-    protected function validateSecretKey()
+    protected function validateSecretKey($apiKey)
     {
-        if ($this->secretKey != SECRET_KEY) {
-            return false;
-        }
-        return true;
+        return $this->secretKey == $apiKey;
     }
 
     /**

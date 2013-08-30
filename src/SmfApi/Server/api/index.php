@@ -44,6 +44,9 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
  **********************************************************************************/
 
+// set your secret key here
+define ('SECRET_KEY', 'Put your secret key here'); 
+
 error_reporting(E_ALL | E_STRICT);
 require_once 'SmfRestServer.php';
-$restServer = new SmfRestServer($_REQUEST);
+$restServer = new SmfRestServer($_REQUEST, SECRET_KEY);
