@@ -145,7 +145,8 @@ class SmfRestClient
         $url = $this->apiServerUrl . "$request";
 
         if ($this->apiDebug) {
-            echo "REQUEST: $url?" . http_build_query($params);
+            // Send error message to defined error handling (php.ini)
+            error_log("REQUEST: $url?" . http_build_query($params));
         }
 
         $ch = curl_init();
