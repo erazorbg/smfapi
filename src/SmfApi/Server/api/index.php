@@ -48,5 +48,7 @@
 define ('SECRET_KEY', 'Put your secret key here'); 
 
 error_reporting(E_ALL | E_STRICT);
+
 require_once 'SmfRestServer.php';
+
 $restServer = new SmfRestServer($_REQUEST, SECRET_KEY);

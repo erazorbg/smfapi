@@ -44,15 +44,12 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
  **********************************************************************************/
 
-/*
-    
- 	
-*/
 namespace SmfApi\Client;
 
-
-if (!function_exists('curl_init'))  throw new Exception('SMF API Client Library requires the cURL PHP extension.');
-if (!function_exists('json_decode')) throw new Exception('SMF API Client Library requires the JSON PHP extension.');
+if (!function_exists('curl_init'))  
+    throw new Exception('SMF API Client Library requires the cURL PHP extension.');
+if (!function_exists('json_decode')) 
+    throw new Exception('SMF API Client Library requires the JSON PHP extension.');
 
 class SmfRestClient
 {
