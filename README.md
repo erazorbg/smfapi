@@ -1,6 +1,8 @@
 REST API for Simple Machines Forum (SMF) 2.0
 ====================================================
 
+[![Build Status](https://travis-ci.org/pc-freak/smfapi.png?branch=master)](https://travis-ci.org/pc-freak/smfapi)
+
 **Note:** This is a **fork** of the SMF [REST API](http://wiki.simplemachines.org/smf/SMF_API#.22REST.22_API_for_SMF_2.0.x) by Andre Nickatina. Our intention is to upgrade and maintain the API.
 
 Use this to integrate your SMF version 2.0 forum with 3rd party software
