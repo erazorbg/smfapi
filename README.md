@@ -29,7 +29,7 @@ Add the following to your `composer.json` file:
 [
 	{
 	    "type": "vcs",
-	    "url" : "https://github.com/pc-freak/smapi.git"
+	    "url" : "https://github.com/pc-freak/smfapi.git"
 	}
 ]
 
