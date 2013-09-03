@@ -51,4 +51,5 @@ error_reporting(E_ALL | E_STRICT);
 
 require_once 'SmfRestServer.php';
 
-$restServer = new SmfRestServer($_REQUEST, SECRET_KEY);
+$restServer = new \SmfApi\Server\SmfRestServer($_REQUEST, SECRET_KEY);
+$restServer->run();

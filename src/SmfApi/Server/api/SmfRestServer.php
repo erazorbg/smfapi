@@ -47,6 +47,7 @@ namespace SmfApi\Server;
 
 class SmfRestServer
 {
+    private $apiKey;
     private $secretKey;
     private $format;
     private $route;
@@ -65,14 +66,25 @@ class SmfRestServer
      */
     public function __construct($request, $apiKey)
     {
+        $this->apiKey = $apiKey;
         // Here we get the $secretKey
         foreach ($request as $k => $v) {
             $this->$k = $v;
         }
-        
-        $this->getRoute()->getMethod();
-        if ($this->validateSecretKey($apiKey)) {
+    }
+
+    /**
+     * Process request and output HTTP response.
+     *
+     * Long description
+     *
+     * @param
+     * @return
+     */
+    public function run() {
+        if ($this->validateSecretKey()) {
             try {
+                $this->getRoute()->getMethod();
                 $this->callMethod();
             } catch (Exception $e) {
                 $this->error = $e->getMessage();
@@ -80,8 +92,6 @@ class SmfRestServer
         } else {
             $this->error = 'Invalid secret (API) key!';
         }
-
-        $this->renderOutput();
     }
     
     /**
@@ -254,9 +264,9 @@ class SmfRestServer
      * @param
      * @return
      */
-    protected function validateSecretKey($apiKey)
+    public function validateSecretKey()
     {
-        return $this->secretKey == $apiKey;
+        return $this->secretKey == $this->apiKey;
     }
 
     /**
@@ -288,7 +298,7 @@ class SmfRestServer
      * @param
      * @return
      */
-    public function renderOutput()
+    public function renderOutput($return = false)
     {
         if (!isset($this->data) || empty($this->data) || false === $this->data) {
             $this->data = 'false';
@@ -302,7 +312,11 @@ class SmfRestServer
         if ('raw' == $this->format) {
             var_dump($this->return);
         } else {
-            echo $this->toJson($this->return);
+            if (isset($return)) {
+                return $this->toJson($this->return);
+            } else {
+                echo $this->toJson($this->return);
+            }
         }
     }
 
