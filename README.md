@@ -25,13 +25,13 @@ Add the following to your `composer.json` file:
 ``` json
 "require": 
 {
-	"pc-freak/smfapi": "dev-master"
+	"erazorbg/smfapi": "dev-master"
 },
 "repositories": 
 [
 	{
 	    "type": "vcs",
-	    "url" : "https://github.com/pc-freak/smfapi.git"
+	    "url" : "https://github.com/erazorbg/smfapi.git"
 	}
 ]
 
