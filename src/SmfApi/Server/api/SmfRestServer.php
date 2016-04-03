@@ -202,7 +202,11 @@ class SmfRestServer
         $method       = str_replace('/', '_', $parts[0]);
         $this->method = $method;
         
-        if (isset($parts[1]) && 'json' == $parts[1]) {
+
+        $format = explode('?', $parts[1]);
+        $format = $format[0];
+
+        if (isset($format) && 'json' == $format) {
             $this->format = 'json';
         } else {
             $this->format = 'raw';
@@ -290,8 +294,7 @@ class SmfRestServer
      * @return
      */
     protected function callMethod()
-    {
-        print $this->method;
+    {        
         if (method_exists($this, $this->method)) {
             try {
                 call_user_func(array($this, $this->method));
@@ -325,7 +328,7 @@ class SmfRestServer
         if ('raw' == $this->format) {
             var_dump($this->return);
         } else {
-            if (isset($return)) {
+            if ($return) {
                 return $this->toJson($this->return);
             } else {
                 echo $this->toJson($this->return);
