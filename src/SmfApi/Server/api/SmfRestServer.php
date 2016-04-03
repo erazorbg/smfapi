@@ -331,6 +331,7 @@ class SmfRestServer
             if ($return) {
                 return $this->toJson($this->return);
             } else {
+                header('Content-Type: application/json');
                 echo $this->toJson($this->return);
             }
         }
