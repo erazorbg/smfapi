@@ -46,9 +46,9 @@
 
 /*
     This file includes functions that may help integration with other scripts
- 	and programs, such as portals. It is independent of SMF, and meant to run
- 	without disturbing your script. It defines several functions, most of
- 	which start with the smfapi_ prefix. These are:
+    and programs, such as portals. It is independent of SMF, and meant to run
+    without disturbing your script. It defines several functions, most of
+    which start with the smfapi_ prefix. These are:
 
 
     array  smfapi_getUserByEmail(string $email)
@@ -175,9 +175,9 @@
         - called by smfapi_getMatchingFile
 
     ---------------------------------------------------------------------------
-	It also defines the following important variables:
+    It also defines the following important variables:
 
-	$smcFunc => Array
+    $smcFunc => Array
     (
         [db_query] => smf_db_query
         [db_quote] => smf_db_quote
@@ -213,7 +213,7 @@
         [ucwords] =>
     )
 
-	$modSettings => Array
+    $modSettings => Array
     (
         [smfVersion] =>
         [news] =>
@@ -523,7 +523,7 @@
 
 // don't do anything if SMF is already loaded
 if (defined('SMF'))
-	return true;
+    return true;
 
 define('SMF', 'API');
 
@@ -553,20 +553,20 @@ global $user_info;
 if (function_exists('set_magic_quotes_runtime')) {
     // remember the current configuration so it can be set back
     $api_magic_quotes_runtime = function_exists('get_magic_quotes_gpc') && get_magic_quotes_runtime();
-	@set_magic_quotes_runtime(0);
+    @set_magic_quotes_runtime(0);
 }
 
 $time_start = microtime();
 
 // Without visiting the forum this session variable might not be set on submit.
 if (!isset($_SESSION['USER_AGENT'])) {
-	$_SESSION['USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
+    $_SESSION['USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
 }
 
 // just being safe...
 foreach (array('db_character_set', 'cachedir') as $variable) {
-	if (isset($GLOBALS[$variable])) {
-		unset($GLOBALS[$variable]);
+    if (isset($GLOBALS[$variable])) {
+        unset($GLOBALS[$variable]);
     }
 }
 
@@ -587,6 +587,7 @@ if (!isset($settings_path) || empty($settings_path)) {
     // specify the settings path here if it's not in smf root and you want to speed things up
     // $settings_path = $_SERVER['DOCUMENT_ROOT'] . /path/to/Settings.php
     if (isset($settings_path) && !file_exists($settings_path)) {
+        
         unset($settings_path);
     }
 }
@@ -604,10 +605,10 @@ if (!isset($settings_path) || empty($settings_path)) {
     $matches = smfapi_getMatchingFile($files, 'Settings.php');
 
     // we're going to search for it...
-	@set_time_limit(600);
-	// try to get some more memory
-	if (@ini_get('memory_limit') < 128) {
-		@ini_set('memory_limit', '128M');
+    @set_time_limit(600);
+    // try to get some more memory
+    if (@ini_get('memory_limit') < 128) {
+        @ini_set('memory_limit', '128M');
     }
 
     if (1 == count($matches)) {
@@ -620,7 +621,7 @@ if (!isset($settings_path) || empty($settings_path)) {
         exit('Unable to load SMF settings file');
     }
 }
-
+print $settings_path;
 // include the settings file
 require_once($settings_path);
 
@@ -633,23 +634,23 @@ $scripturl = $boardurl . '/index.php';
 
 // make absolutely sure the cache directory is defined
 if ((empty($cachedir) || !file_exists($cachedir)) && file_exists($boarddir . '/cache')) {
-	$cachedir = $boarddir . '/cache';
+    $cachedir = $boarddir . '/cache';
 }
 
 // don't do john didley if the forum's been shut down competely
 if (2 == $maintenance) {
-	return;
+    return;
 }
 
 // fix for using the current directory as a path
 if (substr($sourcedir, 0, 1) == '.' && substr($sourcedir, 1, 1) != '.') {
-	$sourcedir = dirname(__FILE__) . substr($sourcedir, 1);
+    $sourcedir = dirname(__FILE__) . substr($sourcedir, 1);
 }
 
 // using a pre 5.1 php version?
 if (-1 == @version_compare(PHP_VERSION, '5.1')) {
     //safe to include, will check if functions exist before declaring
-	require_once($sourcedir . '/Subs-Compat.php');
+    require_once($sourcedir . '/Subs-Compat.php');
 }
 
 // create a variable to store some SMF specific functions in
@@ -666,7 +667,7 @@ smfapi_reloadSettings();
 
 // create random seed if it's not already created
 if (empty($modSettings['rand_seed']) || mt_rand(1, 250) == 69) {
-	smfapi_smfSeedGenerator();
+    smfapi_smfSeedGenerator();
 }
 
 // start the session if there isn't one already...
@@ -695,22 +696,22 @@ function smfapi_getUserByEmail($email='')
     }
 
     $request = $smcFunc['db_query']('', '
-			SELECT *
-			FROM {db_prefix}members
-			WHERE email_address = {string:email_address}
-			LIMIT 1',
-			array(
-				'email_address' => $email,
-			)
-		);
-	$results = $smcFunc['db_fetch_assoc']($request);
-	$smcFunc['db_free_result']($request);
+            SELECT *
+            FROM {db_prefix}members
+            WHERE email_address = {string:email_address}
+            LIMIT 1',
+            array(
+                'email_address' => $email,
+            )
+        );
+    $results = $smcFunc['db_fetch_assoc']($request);
+    $smcFunc['db_free_result']($request);
 
     if (empty($results)) {
         return false;
-	} else {
-	    // return all the results.
-	    return $results;
+    } else {
+        // return all the results.
+        return $results;
     }
 }
 
@@ -738,22 +739,22 @@ function smfapi_getUserById($id='')
     }
 
     $request = $smcFunc['db_query']('', '
-			SELECT *
-			FROM {db_prefix}members
-			WHERE id_member = {int:id_member}
-			LIMIT 1',
-			array(
-				'id_member' => $id,
-			)
-		);
-	$results = $smcFunc['db_fetch_assoc']($request);
-	$smcFunc['db_free_result']($request);
+            SELECT *
+            FROM {db_prefix}members
+            WHERE id_member = {int:id_member}
+            LIMIT 1',
+            array(
+                'id_member' => $id,
+            )
+        );
+    $results = $smcFunc['db_fetch_assoc']($request);
+    $smcFunc['db_free_result']($request);
 
     if (empty($results)) {
         return false;
-	} else {
-	    // return all the results.
-	    return $results;
+    } else {
+        // return all the results.
+        return $results;
     }
 }
 
@@ -776,22 +777,22 @@ function smfapi_getUserByUsername($username='')
     }
 
     $request = $smcFunc['db_query']('', '
-			SELECT *
-			FROM {db_prefix}members
-			WHERE member_name = {string:member_name}
-			LIMIT 1',
-			array(
-				'member_name' => $username,
-			)
-		);
-	$results = $smcFunc['db_fetch_assoc']($request);
-	$smcFunc['db_free_result']($request);
+            SELECT *
+            FROM {db_prefix}members
+            WHERE member_name = {string:member_name}
+            LIMIT 1',
+            array(
+                'member_name' => $username,
+            )
+        );
+    $results = $smcFunc['db_fetch_assoc']($request);
+    $smcFunc['db_free_result']($request);
 
     if (empty($results)) {
         return false;
-	} else {
-	    // return all the results.
-	    return $results;
+    } else {
+        // return all the results.
+        return $results;
     }
 }
 
@@ -848,7 +849,7 @@ function smfapi_getUserData($username='')
 function smfapi_login($username='', $cookieLength=525600)
 {
     global $scripturl, $user_info, $user_settings, $smcFunc;
-	global $cookiename, $maintenance, $modSettings, $sc, $sourcedir;
+    global $cookiename, $maintenance, $modSettings, $sc, $sourcedir;
 
     $user_data = smfapi_getUserData($username);
 
@@ -856,25 +857,25 @@ function smfapi_login($username='', $cookieLength=525600)
         return false;
     }
 
-	// cookie set, session too
-	smfapi_setLoginCookie(60 * $cookieLength, $user_data['id_member'], sha1($user_data['passwd']
+    // cookie set, session too
+    smfapi_setLoginCookie(60 * $cookieLength, $user_data['id_member'], sha1($user_data['passwd']
                    . $user_data['password_salt']));
 
-	// you've logged in, haven't you?
-	smfapi_updateMemberData($user_data['id_member'], array('last_login' => time(), 'member_ip' => $user_info['ip']));
+    // you've logged in, haven't you?
+    smfapi_updateMemberData($user_data['id_member'], array('last_login' => time(), 'member_ip' => $user_info['ip']));
 
-	// get rid of the online entry for that old guest....
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_online
-		WHERE session = {string:session}',
-		array(
-			'session' => 'ip' . $user_info['ip'],
-		)
-	);
+    // get rid of the online entry for that old guest....
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_online
+        WHERE session = {string:session}',
+        array(
+            'session' => 'ip' . $user_info['ip'],
+        )
+    );
 
     smfapi_loadUserSettings();
 
-	return true;
+    return true;
 }
 
 /**
@@ -894,7 +895,7 @@ function smfapi_authenticate($username='', $password='', $encrypted=true)
 {
 
     global $scripturl, $user_info, $user_settings, $smcFunc;
-	global $cookiename, $modSettings, $sc, $sourcedir;
+    global $cookiename, $modSettings, $sc, $sourcedir;
 
     if ('' == $username || '' == $password) {
         return false;
@@ -909,36 +910,36 @@ function smfapi_authenticate($username='', $password='', $encrypted=true)
     }
 
     // load the data up!
-	$request = $smcFunc['db_query']('', '
-		SELECT passwd, id_member, id_group, lngfile, is_activated, email_address, additional_groups, member_name, password_salt,
-			openid_uri, passwd_flood
-		FROM {db_prefix}members
-		WHERE ' . ($smcFunc['db_case_sensitive'] ? 'LOWER(member_name) = LOWER({string:user_name})' : 'member_name = {string:user_name}') . '
-		LIMIT 1',
-		array(
-			'user_name' => $smcFunc['db_case_sensitive'] ? strtolower($username) : $username,
-		)
-	);
+    $request = $smcFunc['db_query']('', '
+        SELECT passwd, id_member, id_group, lngfile, is_activated, email_address, additional_groups, member_name, password_salt,
+            openid_uri, passwd_flood
+        FROM {db_prefix}members
+        WHERE ' . ($smcFunc['db_case_sensitive'] ? 'LOWER(member_name) = LOWER({string:user_name})' : 'member_name = {string:user_name}') . '
+        LIMIT 1',
+        array(
+            'user_name' => $smcFunc['db_case_sensitive'] ? strtolower($username) : $username,
+        )
+    );
     // no user data found... invalid username
-	if ($smcFunc['db_num_rows']($request) == 0) {
+    if ($smcFunc['db_num_rows']($request) == 0) {
         return false;
-	}
+    }
 
     $user_settings = $smcFunc['db_fetch_assoc']($request);
-	$smcFunc['db_free_result']($request);
+    $smcFunc['db_free_result']($request);
 
-	if (40 != strlen($user_settings['passwd'])) {
+    if (40 != strlen($user_settings['passwd'])) {
         // invalid hash in the db
         return false;
-	}
+    }
 
     // if it's not encrypted, do it now
-	if (!$encrypted) {
+    if (!$encrypted) {
         $sha_passwd = sha1(strtolower($user_settings['member_name'])
                       . smfapi_unHtmlspecialchars($password));
     } else {
         $sha_passwd = $password;
-	}
+    }
 
     // if they match the password/hash is correct
     if ($user_settings['passwd'] == $sha_passwd) {
@@ -950,93 +951,93 @@ function smfapi_authenticate($username='', $password='', $encrypted=true)
         // in case they sent the encrypted password into this as unencrypted
         $other_passwords[] = $password;
 
-		// none of the below cases will be used most of the time
+        // none of the below cases will be used most of the time
         // (because the salt is normally set)
-		if ('' == $user_settings['password_salt']) {
-			// YaBB SE, Discus, MD5 (used a lot), SHA-1 (used some), SMF 1.0.x,
+        if ('' == $user_settings['password_salt']) {
+            // YaBB SE, Discus, MD5 (used a lot), SHA-1 (used some), SMF 1.0.x,
             // IkonBoard, and none at all
-			$other_passwords[] = crypt($password, substr($password, 0, 2));
-			$other_passwords[] = crypt($password, substr($user_settings['passwd'], 0, 2));
-			$other_passwords[] = md5($password);
-			$other_passwords[] = sha1($password);
-			$other_passwords[] = md5_hmac($password, strtolower($user_settings['member_name']));
-			$other_passwords[] = md5($password . strtolower($user_settings['member_name']));
-			$other_passwords[] = md5(md5($password));
-			$other_passwords[] = $password;
+            $other_passwords[] = crypt($password, substr($password, 0, 2));
+            $other_passwords[] = crypt($password, substr($user_settings['passwd'], 0, 2));
+            $other_passwords[] = md5($password);
+            $other_passwords[] = sha1($password);
+            $other_passwords[] = md5_hmac($password, strtolower($user_settings['member_name']));
+            $other_passwords[] = md5($password . strtolower($user_settings['member_name']));
+            $other_passwords[] = md5(md5($password));
+            $other_passwords[] = $password;
 
-			// this one is a strange one... MyPHP, crypt() on the MD5 hash
-			$other_passwords[] = crypt(md5($password), md5($password));
+            // this one is a strange one... MyPHP, crypt() on the MD5 hash
+            $other_passwords[] = crypt(md5($password), md5($password));
 
-			// Snitz style - SHA-256.  Technically, this is a downgrade, but most PHP
+            // Snitz style - SHA-256.  Technically, this is a downgrade, but most PHP
             // configurations don't support sha256 anyway.
-			if (strlen($user_settings['passwd']) == 64
+            if (strlen($user_settings['passwd']) == 64
                 && function_exists('mhash') && defined('MHASH_SHA256')) {
-				$other_passwords[] = bin2hex(mhash(MHASH_SHA256, $password));
+                $other_passwords[] = bin2hex(mhash(MHASH_SHA256, $password));
             }
 
-			// phpBB3 users new hashing.  We now support it as well ;)
-			$other_passwords[] = phpBB3_password_check($password, $user_settings['passwd']);
+            // phpBB3 users new hashing.  We now support it as well ;)
+            $other_passwords[] = phpBB3_password_check($password, $user_settings['passwd']);
 
-			// APBoard 2 login method
-			$other_passwords[] = md5(crypt($password, 'CRYPT_MD5'));
-		}
-		// the hash should be 40 if it's SHA-1, so we're safe with more here too
-		elseif (strlen($user_settings['passwd']) == 32) {
-			// vBulletin 3 style hashing?  Let's welcome them with open arms \o/
-			$other_passwords[] = md5(md5($password) . $user_settings['password_salt']);
+            // APBoard 2 login method
+            $other_passwords[] = md5(crypt($password, 'CRYPT_MD5'));
+        }
+        // the hash should be 40 if it's SHA-1, so we're safe with more here too
+        elseif (strlen($user_settings['passwd']) == 32) {
+            // vBulletin 3 style hashing?  Let's welcome them with open arms \o/
+            $other_passwords[] = md5(md5($password) . $user_settings['password_salt']);
 
-			// hmm.. p'raps it's Invision 2 style?
-			$other_passwords[] = md5(md5($user_settings['password_salt'])
+            // hmm.. p'raps it's Invision 2 style?
+            $other_passwords[] = md5(md5($user_settings['password_salt'])
                                  . md5($password));
 
-			// some common md5 ones
-			$other_passwords[] = md5($user_settings['password_salt'] . $password);
-			$other_passwords[] = md5($password . $user_settings['password_salt']);
-		} elseif (strlen($user_settings['passwd']) == 40) {
-			// maybe they are using a hash from before the password fix
-			$other_passwords[] = sha1(strtolower($user_settings['member_name'])
+            // some common md5 ones
+            $other_passwords[] = md5($user_settings['password_salt'] . $password);
+            $other_passwords[] = md5($password . $user_settings['password_salt']);
+        } elseif (strlen($user_settings['passwd']) == 40) {
+            // maybe they are using a hash from before the password fix
+            $other_passwords[] = sha1(strtolower($user_settings['member_name'])
                                  . smfapi_unHtmlspecialchars($password));
 
-			// BurningBoard3 style of hashing
-			$other_passwords[] = sha1($user_settings['password_salt']
+            // BurningBoard3 style of hashing
+            $other_passwords[] = sha1($user_settings['password_salt']
                                  . sha1($user_settings['password_salt']
                                  . sha1($password)));
 
-			// perhaps we converted to UTF-8 and have a valid password being
+            // perhaps we converted to UTF-8 and have a valid password being
             // hashed differently
-			if (isset($context['character_set']) && $context['character_set'] == 'utf8'
+            if (isset($context['character_set']) && $context['character_set'] == 'utf8'
                 && !empty($modSettings['previousCharacterSet'])
                 && $modSettings['previousCharacterSet'] != 'utf8') {
 
-				// try iconv first, for no particular reason
-				if (function_exists('iconv')) {
-					$other_passwords['iconv'] = sha1(strtolower(iconv('UTF-8', $modSettings['previousCharacterSet'], $user_settings['member_name']))
+                // try iconv first, for no particular reason
+                if (function_exists('iconv')) {
+                    $other_passwords['iconv'] = sha1(strtolower(iconv('UTF-8', $modSettings['previousCharacterSet'], $user_settings['member_name']))
                                                 . un_htmlspecialchars(iconv('UTF-8', $modSettings['previousCharacterSet'], $password)));
                 }
 
-				// say it aint so, iconv failed
-				if (empty($other_passwords['iconv']) && function_exists('mb_convert_encoding')) {
-					$other_passwords[] = sha1(strtolower(mb_convert_encoding($user_settings['member_name'], 'UTF-8', $modSettings['previousCharacterSet']))
+                // say it aint so, iconv failed
+                if (empty($other_passwords['iconv']) && function_exists('mb_convert_encoding')) {
+                    $other_passwords[] = sha1(strtolower(mb_convert_encoding($user_settings['member_name'], 'UTF-8', $modSettings['previousCharacterSet']))
                                          . un_htmlspecialchars(mb_convert_encoding($password, 'UTF-8', $modSettings['previousCharacterSet'])));
                 }
-			}
-		}
+            }
+        }
 
-		// SMF's sha1 function can give a funny result on Linux (not our fault!)
+        // SMF's sha1 function can give a funny result on Linux (not our fault!)
         // if we've now got the real one let the old one be valid!
-		if (strpos(strtolower(PHP_OS), 'win') !== 0) {
-			require_once($sourcedir . '/Subs-Compat.php');
-			$other_passwords[] = sha1_smf(strtolower($user_settings['member_name']) . smfapi_unHtmlspecialchars($password));
-		}
+        if (strpos(strtolower(PHP_OS), 'win') !== 0) {
+            require_once($sourcedir . '/Subs-Compat.php');
+            $other_passwords[] = sha1_smf(strtolower($user_settings['member_name']) . smfapi_unHtmlspecialchars($password));
+        }
 
         // if ANY of these other hashes match we'll accept it
-		if (in_array($user_settings['passwd'], $other_passwords)) {
+        if (in_array($user_settings['passwd'], $other_passwords)) {
             // we're not going to update the password or the hash. whatever was
             // used worked, so it will work again through this api, or SMF will
             // update it if the user authenticates through there. No sense messing
             // with it if it's not broken imo. Authentication successful
-			return true;
-		}
+            return true;
+        }
     }
 
     //authentication failed
@@ -1090,21 +1091,21 @@ function smfapi_logout($username='')
     );
 
     if (isset($_SESSION['pack_ftp'])) {
-		$_SESSION['pack_ftp'] = null;
+        $_SESSION['pack_ftp'] = null;
     }
 
-	// they cannot be open ID verified any longer.
-	if (isset($_SESSION['openid'])) {
-		unset($_SESSION['openid']);
+    // they cannot be open ID verified any longer.
+    if (isset($_SESSION['openid'])) {
+        unset($_SESSION['openid']);
     }
 
-	// it won't be first login anymore.
-	if (isset($_SESSION['openid'])) {
-	    unset($_SESSION['first_login']);
+    // it won't be first login anymore.
+    if (isset($_SESSION['openid'])) {
+        unset($_SESSION['first_login']);
     }
 
     // destroy the cookie
-	smfapi_setLoginCookie(-3600, 0);
+    smfapi_setLoginCookie(-3600, 0);
 
     return true;
 }
@@ -1120,20 +1121,20 @@ function smfapi_logout($username='')
  */
 function smfapi_deleteMembers($users)
 {
-	global $sourcedir, $modSettings, $user_info, $smcFunc;
+    global $sourcedir, $modSettings, $user_info, $smcFunc;
 
-	// try give us a while to sort this out...
-	@set_time_limit(600);
-	// try to get some more memory
-	if (@ini_get('memory_limit') < 128) {
-		@ini_set('memory_limit', '128M');
+    // try give us a while to sort this out...
+    @set_time_limit(600);
+    // try to get some more memory
+    if (@ini_get('memory_limit') < 128) {
+        @ini_set('memory_limit', '128M');
     }
 
-	// if it's not an array, make it so
-	if (!is_array($users)) {
-		$users = array($users);
+    // if it's not an array, make it so
+    if (!is_array($users)) {
+        $users = array($users);
     } else {
-		$users = array_unique($users);
+        $users = array_unique($users);
     }
     
     foreach ($users as &$user) {
@@ -1143,293 +1144,293 @@ function smfapi_deleteMembers($users)
         }
     }
 
-	// make sure there's no void user in here
-	$users = array_diff($users, array(0));
+    // make sure there's no void user in here
+    $users = array_diff($users, array(0));
 
-	if (empty($users)) {
-		return false;
+    if (empty($users)) {
+        return false;
     }
 
-	// make these peoples' posts guest posts
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}messages
-		SET id_member = {int:guest_id}, poster_email = {string:blank_email}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'blank_email' => '',
-			'users' => $users,
-		)
-	);
+    // make these peoples' posts guest posts
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}messages
+        SET id_member = {int:guest_id}, poster_email = {string:blank_email}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'blank_email' => '',
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}polls
-		SET id_member = {int:guest_id}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}polls
+        SET id_member = {int:guest_id}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	// make these peoples' posts guest first posts and last posts
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}topics
-		SET id_member_started = {int:guest_id}
-		WHERE id_member_started IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    // make these peoples' posts guest first posts and last posts
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}topics
+        SET id_member_started = {int:guest_id}
+        WHERE id_member_started IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}topics
-		SET id_member_updated = {int:guest_id}
-		WHERE id_member_updated IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}topics
+        SET id_member_updated = {int:guest_id}
+        WHERE id_member_updated IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}log_actions
-		SET id_member = {int:guest_id}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}log_actions
+        SET id_member = {int:guest_id}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}log_banned
-		SET id_member = {int:guest_id}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}log_banned
+        SET id_member = {int:guest_id}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}log_errors
-		SET id_member = {int:guest_id}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}log_errors
+        SET id_member = {int:guest_id}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	// delete the member
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}members
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    // delete the member
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}members
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// delete the logs...
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_actions
-		WHERE id_log = {int:log_type}
-			AND id_member IN ({array_int:users})',
-		array(
-			'log_type' => 2,
-			'users' => $users,
-		)
-	);
+    // delete the logs...
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_actions
+        WHERE id_log = {int:log_type}
+            AND id_member IN ({array_int:users})',
+        array(
+            'log_type' => 2,
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_boards
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_boards
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_comments
-		WHERE id_recipient IN ({array_int:users})
-			AND comment_type = {string:warntpl}',
-		array(
-			'users' => $users,
-			'warntpl' => 'warntpl',
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_comments
+        WHERE id_recipient IN ({array_int:users})
+            AND comment_type = {string:warntpl}',
+        array(
+            'users' => $users,
+            'warntpl' => 'warntpl',
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_group_requests
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_group_requests
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_karma
-		WHERE id_target IN ({array_int:users})
-			OR id_executor IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_karma
+        WHERE id_target IN ({array_int:users})
+            OR id_executor IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_mark_read
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_mark_read
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_notify
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_notify
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_online
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_online
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_subscribed
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_subscribed
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}log_topics
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}log_topics
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}collapsed_categories
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}collapsed_categories
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// make their votes appear as guest votes - at least it keeps the totals right
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}log_polls
-		SET id_member = {int:guest_id}
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    // make their votes appear as guest votes - at least it keeps the totals right
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}log_polls
+        SET id_member = {int:guest_id}
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	// delete personal messages
-	smfapi_deleteMessages(null, null, $users);
+    // delete personal messages
+    smfapi_deleteMessages(null, null, $users);
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}personal_messages
-		SET id_member_from = {int:guest_id}
-		WHERE id_member_from IN ({array_int:users})',
-		array(
-			'guest_id' => 0,
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}personal_messages
+        SET id_member_from = {int:guest_id}
+        WHERE id_member_from IN ({array_int:users})',
+        array(
+            'guest_id' => 0,
+            'users' => $users,
+        )
+    );
 
-	// they no longer exist, so we don't know who it was sent to
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}pm_recipients
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    // they no longer exist, so we don't know who it was sent to
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}pm_recipients
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// it's over, no more moderation for you
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}moderators
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    // it's over, no more moderation for you
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}moderators
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}group_moderators
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}group_moderators
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// if you don't exist we can't ban you
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}ban_items
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    // if you don't exist we can't ban you
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}ban_items
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// remove individual theme settings
-	$smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}themes
-		WHERE id_member IN ({array_int:users})',
-		array(
-			'users' => $users,
-		)
-	);
+    // remove individual theme settings
+    $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}themes
+        WHERE id_member IN ({array_int:users})',
+        array(
+            'users' => $users,
+        )
+    );
 
-	// I'm not your buddy, chief
-	$request = $smcFunc['db_query']('', '
-		SELECT id_member, pm_ignore_list, buddy_list
-		FROM {db_prefix}members
-		WHERE FIND_IN_SET({raw:pm_ignore_list}, pm_ignore_list) != 0 OR FIND_IN_SET({raw:buddy_list}, buddy_list) != 0',
-		array(
-			'pm_ignore_list' => implode(', pm_ignore_list) != 0 OR FIND_IN_SET(', $users),
-			'buddy_list' => implode(', buddy_list) != 0 OR FIND_IN_SET(', $users),
-		)
-	);
+    // I'm not your buddy, chief
+    $request = $smcFunc['db_query']('', '
+        SELECT id_member, pm_ignore_list, buddy_list
+        FROM {db_prefix}members
+        WHERE FIND_IN_SET({raw:pm_ignore_list}, pm_ignore_list) != 0 OR FIND_IN_SET({raw:buddy_list}, buddy_list) != 0',
+        array(
+            'pm_ignore_list' => implode(', pm_ignore_list) != 0 OR FIND_IN_SET(', $users),
+            'buddy_list' => implode(', buddy_list) != 0 OR FIND_IN_SET(', $users),
+        )
+    );
 
-	while ($row = $smcFunc['db_fetch_assoc']($request)) {
-		$smcFunc['db_query']('', '
-			UPDATE {db_prefix}members
-			SET
-				pm_ignore_list = {string:pm_ignore_list},
-				buddy_list = {string:buddy_list}
-			WHERE id_member = {int:id_member}',
-			array(
-				'id_member' => $row['id_member'],
-				'pm_ignore_list' => implode(',', array_diff(explode(',', $row['pm_ignore_list']), $users)),
-				'buddy_list' => implode(',', array_diff(explode(',', $row['buddy_list']), $users)),
-			)
-		);
+    while ($row = $smcFunc['db_fetch_assoc']($request)) {
+        $smcFunc['db_query']('', '
+            UPDATE {db_prefix}members
+            SET
+                pm_ignore_list = {string:pm_ignore_list},
+                buddy_list = {string:buddy_list}
+            WHERE id_member = {int:id_member}',
+            array(
+                'id_member' => $row['id_member'],
+                'pm_ignore_list' => implode(',', array_diff(explode(',', $row['pm_ignore_list']), $users)),
+                'buddy_list' => implode(',', array_diff(explode(',', $row['buddy_list']), $users)),
+            )
+        );
     }
 
-	$smcFunc['db_free_result']($request);
+    $smcFunc['db_free_result']($request);
 
-	// make sure no member's birthday is still sticking in the calendar...
-	smfapi_updateSettings(array(
-		'calendar_updated' => time(),
-	));
+    // make sure no member's birthday is still sticking in the calendar...
+    smfapi_updateSettings(array(
+        'calendar_updated' => time(),
+    ));
 
-	smfapi_updateStats('member');
+    smfapi_updateStats('member');
 
-	return true;
+    return true;
 }
 
 /**
@@ -1443,207 +1444,207 @@ function smfapi_deleteMembers($users)
  */
 function smfapi_registerMember($regOptions)
 {
-	global $scripturl, $modSettings, $sourcedir;
-	global $user_info, $options, $settings, $smcFunc;
+    global $scripturl, $modSettings, $sourcedir;
+    global $user_info, $options, $settings, $smcFunc;
 
     $reg_errors = array();
 
-	// check username
-	if (empty($regOptions['member_name'])) {
-		$reg_errors[] = 'username empty';
+    // check username
+    if (empty($regOptions['member_name'])) {
+        $reg_errors[] = 'username empty';
     }
 
     if (false !== smfapi_getUserbyUsername($regOptions['member_name'])) {
         $reg_errors[] = 'username taken';
     }
 
-	// check email
-	if (empty($regOptions['email'])
+    // check email
+    if (empty($regOptions['email'])
         || preg_match('~^[0-9A-Za-z=_+\-/][0-9A-Za-z=_\'+\-/\.]*@[\w\-]+(\.[\w\-]+)*(\.[\w]{2,6})$~', $regOptions['email']) === 0
         || strlen($regOptions['email']) > 255) {
-		    $reg_errors[] = 'email invalid';
+            $reg_errors[] = 'email invalid';
     }
 
     if (false !== smfapi_getUserbyEmail($regOptions['email'])) {
         $reg_errors[] = 'email already in use';
     }
 
-	// generate a validation code if it's supposed to be emailed
-	// unless there was one passed in for us to use
-	$validation_code = '';
-	if ($regOptions['require'] == 'activation') {
+    // generate a validation code if it's supposed to be emailed
+    // unless there was one passed in for us to use
+    $validation_code = '';
+    if ($regOptions['require'] == 'activation') {
         if (isset($regOptions['validation_code'])) {
-		    $validation_code = $regOptions['validation_code'];
-		} else {
+            $validation_code = $regOptions['validation_code'];
+        } else {
             $validation_code = smfapi_generateValidationCode();
-		}
+        }
     }
 
     // password empty is an error
-	if (!isset($regOptions['password']) || '' == $regOptions['password']) {
+    if (!isset($regOptions['password']) || '' == $regOptions['password']) {
         $reg_errors[] = 'password empty';
-	}
+    }
 
-	// make them match if they don't
-	if (!isset($regOptions['password_check']) || $regOptions['password'] != $regOptions['password_check']) {
+    // make them match if they don't
+    if (!isset($regOptions['password_check']) || $regOptions['password'] != $regOptions['password_check']) {
         // we'll make them match ;)
         $regOptions['password_check'] = $regOptions['password'];
     }
 
-	// if there's any errors left return them at once
-	if (!empty($reg_errors)) {
-		return $reg_errors;
+    // if there's any errors left return them at once
+    if (!empty($reg_errors)) {
+        return $reg_errors;
     }
 
-	// some of these might be overwritten (the lower ones that are in the arrays below)
-	$regOptions['register_vars'] = array(
-		'member_name' => $regOptions['member_name'],
-		'email_address' => $regOptions['email'],
-		'passwd' => sha1(strtolower($regOptions['member_name']) . $regOptions['password']),
-		'password_salt' => substr(md5(mt_rand()), 0, 4) ,
-		'posts' => 0,
-		'date_registered' => time(),
-		'member_ip' => isset($user_info['ip'])? $user_info['ip']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
-		'member_ip2' => isset($_SERVER['BAN_CHECK_IP'])? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
-		'validation_code' => $validation_code,
-		'real_name' => isset($regOptions['real_name'])? $regOptions['real_name']:$regOptions['member_name'],
-		'personal_text' => $modSettings['default_personal_text'],
-		'pm_email_notify' => 1,
-		'id_theme' => 0,
-		'id_post_group' => 4,
-		'lngfile' => isset($regOptions['lngfile'])? $regOptions['lngfile']:'',
-		'buddy_list' => '',
-		'pm_ignore_list' => '',
-		'message_labels' => '',
-		'website_title' => isset($regOptions['website_title'])? $regOptions['website_title']:'',
-		'website_url' => isset($regOptions['website_url'])? $regOptions['website_url']:'',
-		'location' => isset($regOptions['location'])? $regOptions['location']:'',
-		'icq' => isset($regOptions['icq'])? $regOptions['icq']:'',
-		'aim' => isset($regOptions['aim'])? $regOptions['aim']:'',
-		'yim' => isset($regOptions['yim'])? $regOptions['yim']:'',
-		'msn' => isset($regOptions['msn'])? $regOptions['msn']:'',
-		'time_format' => isset($regOptions['time_format'])? $regOptions['time_format']:'',
-		'signature' => isset($regOptions['signature'])? $regOptions['signature']:'',
-		'avatar' => isset($regOptions['avatar'])? $regOptions['avatar']:'',
-		'usertitle' => '',
-		'secret_question' => isset($regOptions['secret_question'])? $regOptions['secret_question']:'',
-		'secret_answer' => isset($regOptions['secret_answer'])? $regOptions['secret_answer']:'',
-		'additional_groups' => '',
-		'ignore_boards' => '',
-		'smiley_set' => '',
-		'openid_uri' => isset($regOptions['openid_uri'])? $regOptions['openid_uri']:'',
-	);
+    // some of these might be overwritten (the lower ones that are in the arrays below)
+    $regOptions['register_vars'] = array(
+        'member_name' => $regOptions['member_name'],
+        'email_address' => $regOptions['email'],
+        'passwd' => sha1(strtolower($regOptions['member_name']) . $regOptions['password']),
+        'password_salt' => substr(md5(mt_rand()), 0, 4) ,
+        'posts' => 0,
+        'date_registered' => time(),
+        'member_ip' => isset($user_info['ip'])? $user_info['ip']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
+        'member_ip2' => isset($_SERVER['BAN_CHECK_IP'])? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
+        'validation_code' => $validation_code,
+        'real_name' => isset($regOptions['real_name'])? $regOptions['real_name']:$regOptions['member_name'],
+        'personal_text' => $modSettings['default_personal_text'],
+        'pm_email_notify' => 1,
+        'id_theme' => 0,
+        'id_post_group' => 4,
+        'lngfile' => isset($regOptions['lngfile'])? $regOptions['lngfile']:'',
+        'buddy_list' => '',
+        'pm_ignore_list' => '',
+        'message_labels' => '',
+        'website_title' => isset($regOptions['website_title'])? $regOptions['website_title']:'',
+        'website_url' => isset($regOptions['website_url'])? $regOptions['website_url']:'',
+        'location' => isset($regOptions['location'])? $regOptions['location']:'',
+        'icq' => isset($regOptions['icq'])? $regOptions['icq']:'',
+        'aim' => isset($regOptions['aim'])? $regOptions['aim']:'',
+        'yim' => isset($regOptions['yim'])? $regOptions['yim']:'',
+        'msn' => isset($regOptions['msn'])? $regOptions['msn']:'',
+        'time_format' => isset($regOptions['time_format'])? $regOptions['time_format']:'',
+        'signature' => isset($regOptions['signature'])? $regOptions['signature']:'',
+        'avatar' => isset($regOptions['avatar'])? $regOptions['avatar']:'',
+        'usertitle' => '',
+        'secret_question' => isset($regOptions['secret_question'])? $regOptions['secret_question']:'',
+        'secret_answer' => isset($regOptions['secret_answer'])? $regOptions['secret_answer']:'',
+        'additional_groups' => '',
+        'ignore_boards' => '',
+        'smiley_set' => '',
+        'openid_uri' => isset($regOptions['openid_uri'])? $regOptions['openid_uri']:'',
+    );
 
-	// maybe it can be activated right away?
-	if ($regOptions['require'] == 'nothing')
-		$regOptions['register_vars']['is_activated'] = 1;
-	// maybe it must be activated by email?
-	elseif ($regOptions['require'] == 'activation')
-		$regOptions['register_vars']['is_activated'] = 0;
-	// otherwise it must be awaiting approval!
-	else
-		$regOptions['register_vars']['is_activated'] = 3;
+    // maybe it can be activated right away?
+    if ($regOptions['require'] == 'nothing')
+        $regOptions['register_vars']['is_activated'] = 1;
+    // maybe it must be activated by email?
+    elseif ($regOptions['require'] == 'activation')
+        $regOptions['register_vars']['is_activated'] = 0;
+    // otherwise it must be awaiting approval!
+    else
+        $regOptions['register_vars']['is_activated'] = 3;
 
-	if (isset($regOptions['memberGroup']))
-	{
+    if (isset($regOptions['memberGroup']))
+    {
         // make sure the id_group will be valid, if this is an administator
-		$regOptions['register_vars']['id_group'] = $regOptions['memberGroup'];
+        $regOptions['register_vars']['id_group'] = $regOptions['memberGroup'];
 
-		// check if this group is assignable
-		$unassignableGroups = array(-1, 3);
-		$request = $smcFunc['db_query']('', '
-			SELECT id_group
-			FROM {db_prefix}membergroups
-			WHERE min_posts != {int:min_posts}' . '
-				OR group_type = {int:is_protected}',
-			array(
-				'min_posts' => -1,
-				'is_protected' => 1,
-			)
-		);
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$unassignableGroups[] = $row['id_group'];
+        // check if this group is assignable
+        $unassignableGroups = array(-1, 3);
+        $request = $smcFunc['db_query']('', '
+            SELECT id_group
+            FROM {db_prefix}membergroups
+            WHERE min_posts != {int:min_posts}' . '
+                OR group_type = {int:is_protected}',
+            array(
+                'min_posts' => -1,
+                'is_protected' => 1,
+            )
+        );
+        while ($row = $smcFunc['db_fetch_assoc']($request)) {
+            $unassignableGroups[] = $row['id_group'];
         }
 
-		$smcFunc['db_free_result']($request);
+        $smcFunc['db_free_result']($request);
 
-		if (in_array($regOptions['register_vars']['id_group'], $unassignableGroups)) {
-			$regOptions['register_vars']['id_group'] = 0;
-        }
-	}
-
-	// integrate optional user theme options to be set
-	$theme_vars = array();
-
-	if (!empty($regOptions['theme_vars'])) {
-		foreach ($regOptions['theme_vars'] as $var => $value) {
-			$theme_vars[$var] = $value;
+        if (in_array($regOptions['register_vars']['id_group'], $unassignableGroups)) {
+            $regOptions['register_vars']['id_group'] = 0;
         }
     }
 
-	// right, now let's prepare for insertion
-	$knownInts = array(
-		'date_registered', 'posts', 'id_group', 'last_login', 'instant_messages', 'unread_messages',
-		'new_pm', 'pm_prefs', 'gender', 'hide_email', 'show_online', 'pm_email_notify', 'karma_good', 'karma_bad',
-		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
-		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
-	);
-	$knownFloats = array(
-		'time_offset',
-	);
+    // integrate optional user theme options to be set
+    $theme_vars = array();
 
-	$column_names = array();
-	$values = array();
+    if (!empty($regOptions['theme_vars'])) {
+        foreach ($regOptions['theme_vars'] as $var => $value) {
+            $theme_vars[$var] = $value;
+        }
+    }
 
-	foreach ($regOptions['register_vars'] as $var => $val) {
-		$type = 'string';
-		if (in_array($var, $knownInts)) {
-			$type = 'int';
+    // right, now let's prepare for insertion
+    $knownInts = array(
+        'date_registered', 'posts', 'id_group', 'last_login', 'instant_messages', 'unread_messages',
+        'new_pm', 'pm_prefs', 'gender', 'hide_email', 'show_online', 'pm_email_notify', 'karma_good', 'karma_bad',
+        'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
+        'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
+    );
+    $knownFloats = array(
+        'time_offset',
+    );
+
+    $column_names = array();
+    $values = array();
+
+    foreach ($regOptions['register_vars'] as $var => $val) {
+        $type = 'string';
+        if (in_array($var, $knownInts)) {
+            $type = 'int';
         } elseif (in_array($var, $knownFloats)) {
-			$type = 'float';
+            $type = 'float';
         } elseif ($var == 'birthdate') {
-			$type = 'date';
+            $type = 'date';
         }
 
-		$column_names[$var] = $type;
-		$values[$var] = $val;
-	}
-
-	// register them into the database
-	$smcFunc['db_insert']('',
-		'{db_prefix}members',
-		$column_names,
-		$values,
-		array('id_member')
-	);
-
-	$memberID = $smcFunc['db_insert_id']('{db_prefix}members', 'id_member');
-
-	// update the number of members and latest member's info - and pass the name, but remove the 's
-	if ($regOptions['register_vars']['is_activated'] == 1) {
-		smfapi_updateStats('member', $memberID, $regOptions['register_vars']['real_name']);
-    } else {
-		smfapi_updateStats('member');
+        $column_names[$var] = $type;
+        $values[$var] = $val;
     }
 
-	// theme variables too?
-	if (!empty($theme_vars)) {
-		$inserts = array();
-		foreach ($theme_vars as $var => $val) {
-			$inserts[] = array($memberID, $var, $val);
+    // register them into the database
+    $smcFunc['db_insert']('',
+        '{db_prefix}members',
+        $column_names,
+        $values,
+        array('id_member')
+    );
+
+    $memberID = $smcFunc['db_insert_id']('{db_prefix}members', 'id_member');
+
+    // update the number of members and latest member's info - and pass the name, but remove the 's
+    if ($regOptions['register_vars']['is_activated'] == 1) {
+        smfapi_updateStats('member', $memberID, $regOptions['register_vars']['real_name']);
+    } else {
+        smfapi_updateStats('member');
+    }
+
+    // theme variables too?
+    if (!empty($theme_vars)) {
+        $inserts = array();
+        foreach ($theme_vars as $var => $val) {
+            $inserts[] = array($memberID, $var, $val);
         }
-		$smcFunc['db_insert']('insert',
-			'{db_prefix}themes',
-			array('id_member' => 'int', 'variable' => 'string-255', 'value' => 'string-65534'),
-			$inserts,
-			array('id_member', 'variable')
-		);
-	}
+        $smcFunc['db_insert']('insert',
+            '{db_prefix}themes',
+            array('id_member' => 'int', 'variable' => 'string-255', 'value' => 'string-65534'),
+            $inserts,
+            array('id_member', 'variable')
+        );
+    }
 
-	// okay, they're for sure registered... make sure the session is aware of this for security
-	$_SESSION['just_registered'] = 1;
+    // okay, they're for sure registered... make sure the session is aware of this for security
+    $_SESSION['just_registered'] = 1;
 
-	return $memberID;
+    return $memberID;
 }
 
 /**
@@ -1661,76 +1662,76 @@ function smfapi_registerMember($regOptions)
  */
 function smfapi_logError($error_message, $error_type = 'general', $file = null, $line = null)
 {
-	global $modSettings, $sc, $user_info, $smcFunc, $scripturl, $last_error;
+    global $modSettings, $sc, $user_info, $smcFunc, $scripturl, $last_error;
 
-	// check if error logging is actually on.
-	if (empty($modSettings['enableErrorLogging'])) {
-		return false;
+    // check if error logging is actually on.
+    if (empty($modSettings['enableErrorLogging'])) {
+        return false;
     }
 
-	// basically, htmlspecialchars it minus &. (for entities!)
-	$error_message = strtr($error_message, array('<' => '&lt;', '>' => '&gt;', '"' => '&quot;'));
-	$error_message = strtr($error_message, array('&lt;br /&gt;' => '<br />', '&lt;b&gt;' => '<strong>', '&lt;/b&gt;' => '</strong>', "\n" => '<br />'));
+    // basically, htmlspecialchars it minus &. (for entities!)
+    $error_message = strtr($error_message, array('<' => '&lt;', '>' => '&gt;', '"' => '&quot;'));
+    $error_message = strtr($error_message, array('&lt;br /&gt;' => '<br />', '&lt;b&gt;' => '<strong>', '&lt;/b&gt;' => '</strong>', "\n" => '<br />'));
 
-	// add a file and line to the error message?
-	// don't use the actual txt entries for file and line but instead use %1$s for file and %2$s for line
-	if ($file == null) {
-		$file = $scripturl;
+    // add a file and line to the error message?
+    // don't use the actual txt entries for file and line but instead use %1$s for file and %2$s for line
+    if ($file == null) {
+        $file = $scripturl;
     } else {
-		// window style slashes don't play well, lets convert them to the unix style
-		$file = str_replace('\\', '/', $file);
+        // window style slashes don't play well, lets convert them to the unix style
+        $file = str_replace('\\', '/', $file);
     }
 
-	if ($line == null) {
-		$line = 0;
+    if ($line == null) {
+        $line = 0;
     } else {
-		$line = (int) $line;
+        $line = (int) $line;
     }
 
-	// just in case there's no id_member or IP set yet
-	if (empty($user_info['id'])) {
-		$user_info['id'] = 0;
+    // just in case there's no id_member or IP set yet
+    if (empty($user_info['id'])) {
+        $user_info['id'] = 0;
     }
-	if (empty($user_info['ip'])) {
-		$user_info['ip'] = $_SERVER['REMOTE_ADDR'];
+    if (empty($user_info['ip'])) {
+        $user_info['ip'] = $_SERVER['REMOTE_ADDR'];
     }
 
-	// find the best query string we can...
-	$query_string = empty($_SERVER['QUERY_STRING']) ? (empty($_SERVER['REQUEST_URL']) ? '' : str_replace($scripturl, '', $_SERVER['REQUEST_URL'])) : $_SERVER['QUERY_STRING'];
+    // find the best query string we can...
+    $query_string = empty($_SERVER['QUERY_STRING']) ? (empty($_SERVER['REQUEST_URL']) ? '' : str_replace($scripturl, '', $_SERVER['REQUEST_URL'])) : $_SERVER['QUERY_STRING'];
 
-	// don't log the session hash in the url twice, it's a waste.
-	$query_string = htmlspecialchars((SMF == 'API' ? '' : '?') . preg_replace(array('~;sesc=[^&;]+~', '~'
+    // don't log the session hash in the url twice, it's a waste.
+    $query_string = htmlspecialchars((SMF == 'API' ? '' : '?') . preg_replace(array('~;sesc=[^&;]+~', '~'
                     . session_name() . '=' . session_id() . '[&;]~'), array(';sesc', ''), $query_string));
 
 
-	// what types of categories do we have?
-	$known_error_types = array(
-		'general',
-		'critical',
-		'database',
-		'undefined_vars',
-		'user',
-		'template',
-		'debug',
-	);
+    // what types of categories do we have?
+    $known_error_types = array(
+        'general',
+        'critical',
+        'database',
+        'undefined_vars',
+        'user',
+        'template',
+        'debug',
+    );
 
-	// make sure the category that was specified is a valid one
-	$error_type = in_array($error_type, $known_error_types) && $error_type !== true ? $error_type : 'general';
+    // make sure the category that was specified is a valid one
+    $error_type = in_array($error_type, $known_error_types) && $error_type !== true ? $error_type : 'general';
 
-	// don't log the same error countless times, as we can get in a cycle of depression...
-	$error_info = array($user_info['id'], time(), $user_info['ip'], $query_string, $error_message, (string) $sc, $error_type, $file, $line);
-	if (empty($last_error) || $last_error != $error_info) {
-		// insert the error into the database.
-		$smcFunc['db_insert']('',
-			'{db_prefix}log_errors',
-			array('id_member' => 'int', 'log_time' => 'int', 'ip' => 'string-16', 'url' => 'string-65534', 'message' => 'string-65534', 'session' => 'string', 'error_type' => 'string', 'file' => 'string-255', 'line' => 'int'),
-			$error_info,
-			array('id_error')
-		);
-		$last_error = $error_info;
-	}
+    // don't log the same error countless times, as we can get in a cycle of depression...
+    $error_info = array($user_info['id'], time(), $user_info['ip'], $query_string, $error_message, (string) $sc, $error_type, $file, $line);
+    if (empty($last_error) || $last_error != $error_info) {
+        // insert the error into the database.
+        $smcFunc['db_insert']('',
+            '{db_prefix}log_errors',
+            array('id_member' => 'int', 'log_time' => 'int', 'ip' => 'string-16', 'url' => 'string-65534', 'message' => 'string-65534', 'session' => 'string', 'error_type' => 'string', 'file' => 'string-255', 'line' => 'int'),
+            $error_info,
+            array('id_error')
+        );
+        $last_error = $error_info;
+    }
 
-	return true;
+    return true;
 }
 
 /**
@@ -1745,127 +1746,127 @@ function smfapi_logError($error_message, $error_type = 'general', $file = null, 
  */
 function smfapi_reloadSettings()
 {
-	global $modSettings, $boarddir, $smcFunc, $txt, $db_character_set, $context, $sourcedir;
+    global $modSettings, $boarddir, $smcFunc, $txt, $db_character_set, $context, $sourcedir;
 
-	// most database systems have not set UTF-8 as their default input charset.
-	if (!empty($db_character_set)) {
-		$smcFunc['db_query']('set_character_set', '
-			SET NAMES ' . $db_character_set,
-			array(
-			)
-		);
+    // most database systems have not set UTF-8 as their default input charset.
+    if (!empty($db_character_set)) {
+        $smcFunc['db_query']('set_character_set', '
+            SET NAMES ' . $db_character_set,
+            array(
+            )
+        );
     }
 
-	// try to load it from the cache first; it'll never get cached if the setting is off.
-	if (($modSettings = smfapi_cacheGetData('modSettings', 90)) == null) {
-		$request = $smcFunc['db_query']('', '
-			SELECT variable, value
-			FROM {db_prefix}settings',
-			array(
-			)
-		);
+    // try to load it from the cache first; it'll never get cached if the setting is off.
+    if (($modSettings = smfapi_cacheGetData('modSettings', 90)) == null) {
+        $request = $smcFunc['db_query']('', '
+            SELECT variable, value
+            FROM {db_prefix}settings',
+            array(
+            )
+        );
 
-		$modSettings = array();
+        $modSettings = array();
 
-		if (!$request) {
+        if (!$request) {
             return false;
         }
 
-		while ($row = $smcFunc['db_fetch_row']($request)) {
-			$modSettings[$row[0]] = $row[1];
+        while ($row = $smcFunc['db_fetch_row']($request)) {
+            $modSettings[$row[0]] = $row[1];
         }
 
-		$smcFunc['db_free_result']($request);
+        $smcFunc['db_free_result']($request);
 
-		if (!empty($modSettings['cache_enable'])) {
-			smfapi_cachePutData('modSettings', $modSettings, 90);
+        if (!empty($modSettings['cache_enable'])) {
+            smfapi_cachePutData('modSettings', $modSettings, 90);
         }
-	}
+    }
 
-	// UTF-8 in regular expressions is unsupported on PHP(win) versions < 4.2.3.
-	$utf8 = (empty($modSettings['global_character_set']) ? $txt['lang_character_set'] : $modSettings['global_character_set']) === 'UTF-8' && (strpos(strtolower(PHP_OS), 'win') === false || @version_compare(PHP_VERSION, '4.2.3') != -1);
+    // UTF-8 in regular expressions is unsupported on PHP(win) versions < 4.2.3.
+    $utf8 = (empty($modSettings['global_character_set']) ? $txt['lang_character_set'] : $modSettings['global_character_set']) === 'UTF-8' && (strpos(strtolower(PHP_OS), 'win') === false || @version_compare(PHP_VERSION, '4.2.3') != -1);
 
-	// set a list of common functions.
-	$ent_list = empty($modSettings['disableEntityCheck']) ? '&(#\d{1,7}|quot|amp|lt|gt|nbsp);' : '&(#021|quot|amp|lt|gt|nbsp);';
-	$ent_check = empty($modSettings['disableEntityCheck']) ? array('preg_replace(\'~(&#(\d{1,7}|x[0-9a-fA-F]{1,6});)~e\', \'$smcFunc[\\\'entity_fix\\\'](\\\'\\2\\\')\', ', ')') : array('', '');
+    // set a list of common functions.
+    $ent_list = empty($modSettings['disableEntityCheck']) ? '&(#\d{1,7}|quot|amp|lt|gt|nbsp);' : '&(#021|quot|amp|lt|gt|nbsp);';
+    $ent_check = empty($modSettings['disableEntityCheck']) ? array('preg_replace(\'~(&#(\d{1,7}|x[0-9a-fA-F]{1,6});)~e\', \'$smcFunc[\\\'entity_fix\\\'](\\\'\\2\\\')\', ', ')') : array('', '');
 
-	// preg_replace can handle complex characters only for higher PHP versions.
-	$space_chars = $utf8 ? (@version_compare(PHP_VERSION, '4.3.3') != -1 ? '\x{A0}\x{AD}\x{2000}-\x{200F}\x{201F}\x{202F}\x{3000}\x{FEFF}' : "\xC2\xA0\xC2\xAD\xE2\x80\x80-\xE2\x80\x8F\xE2\x80\x9F\xE2\x80\xAF\xE2\x80\x9F\xE3\x80\x80\xEF\xBB\xBF") : '\x00-\x08\x0B\x0C\x0E-\x19\xA0';
+    // preg_replace can handle complex characters only for higher PHP versions.
+    $space_chars = $utf8 ? (@version_compare(PHP_VERSION, '4.3.3') != -1 ? '\x{A0}\x{AD}\x{2000}-\x{200F}\x{201F}\x{202F}\x{3000}\x{FEFF}' : "\xC2\xA0\xC2\xAD\xE2\x80\x80-\xE2\x80\x8F\xE2\x80\x9F\xE2\x80\xAF\xE2\x80\x9F\xE3\x80\x80\xEF\xBB\xBF") : '\x00-\x08\x0B\x0C\x0E-\x19\xA0';
 
-	$smcFunc += array(
-		'entity_fix' => create_function('$string', '
-			$num = substr($string, 0, 1) === \'x\' ? hexdec(substr($string, 1)) : (int) $string;
-			return $num < 0x20 || $num > 0x10FFFF || ($num >= 0xD800 && $num <= 0xDFFF) || $num == 0x202E ? \'\' : \'&#\' . $num . \';\';'),
-		'htmlspecialchars' => create_function('$string, $quote_style = ENT_COMPAT, $charset = \'ISO-8859-1\'', '
-			global $smcFunc;
-			return ' . strtr($ent_check[0], array('&' => '&amp;')) . 'htmlspecialchars($string, $quote_style, ' . ($utf8 ? '\'UTF-8\'' : '$charset') . ')' . $ent_check[1] . ';'),
-		'htmltrim' => create_function('$string', '
-			global $smcFunc;
-			return preg_replace(\'~^(?:[ \t\n\r\x0B\x00' . $space_chars . ']|&nbsp;)+|(?:[ \t\n\r\x0B\x00' . $space_chars . ']|&nbsp;)+$~' . ($utf8 ? 'u' : '') . '\', \'\', ' . implode('$string', $ent_check) . ');'),
-		'strlen' => create_function('$string', '
-			global $smcFunc;
-			return strlen(preg_replace(\'~' . $ent_list . ($utf8 ? '|.~u' : '~') . '\', \'_\', ' . implode('$string', $ent_check) . '));'),
-		'strpos' => create_function('$haystack, $needle, $offset = 0', '
-			global $smcFunc;
-			$haystack_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\', ' . implode('$haystack', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-			$haystack_size = count($haystack_arr);
-			if (strlen($needle) === 1)
-			{
-				$result = array_search($needle, array_slice($haystack_arr, $offset));
-				return is_int($result) ? $result + $offset : false;
-			}
-			else
-			{
-				$needle_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\',  ' . implode('$needle', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-				$needle_size = count($needle_arr);
+    $smcFunc += array(
+        'entity_fix' => create_function('$string', '
+            $num = substr($string, 0, 1) === \'x\' ? hexdec(substr($string, 1)) : (int) $string;
+            return $num < 0x20 || $num > 0x10FFFF || ($num >= 0xD800 && $num <= 0xDFFF) || $num == 0x202E ? \'\' : \'&#\' . $num . \';\';'),
+        'htmlspecialchars' => create_function('$string, $quote_style = ENT_COMPAT, $charset = \'ISO-8859-1\'', '
+            global $smcFunc;
+            return ' . strtr($ent_check[0], array('&' => '&amp;')) . 'htmlspecialchars($string, $quote_style, ' . ($utf8 ? '\'UTF-8\'' : '$charset') . ')' . $ent_check[1] . ';'),
+        'htmltrim' => create_function('$string', '
+            global $smcFunc;
+            return preg_replace(\'~^(?:[ \t\n\r\x0B\x00' . $space_chars . ']|&nbsp;)+|(?:[ \t\n\r\x0B\x00' . $space_chars . ']|&nbsp;)+$~' . ($utf8 ? 'u' : '') . '\', \'\', ' . implode('$string', $ent_check) . ');'),
+        'strlen' => create_function('$string', '
+            global $smcFunc;
+            return strlen(preg_replace(\'~' . $ent_list . ($utf8 ? '|.~u' : '~') . '\', \'_\', ' . implode('$string', $ent_check) . '));'),
+        'strpos' => create_function('$haystack, $needle, $offset = 0', '
+            global $smcFunc;
+            $haystack_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\', ' . implode('$haystack', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            $haystack_size = count($haystack_arr);
+            if (strlen($needle) === 1)
+            {
+                $result = array_search($needle, array_slice($haystack_arr, $offset));
+                return is_int($result) ? $result + $offset : false;
+            }
+            else
+            {
+                $needle_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\',  ' . implode('$needle', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+                $needle_size = count($needle_arr);
 
-				$result = array_search($needle_arr[0], array_slice($haystack_arr, $offset));
-				while (is_int($result))
-				{
-					$offset += $result;
-					if (array_slice($haystack_arr, $offset, $needle_size) === $needle_arr)
-						return $offset;
-					$result = array_search($needle_arr[0], array_slice($haystack_arr, ++$offset));
-				}
-				return false;
-			}'),
-		'substr' => create_function('$string, $start, $length = null', '
-			global $smcFunc;
-			$ent_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\', ' . implode('$string', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-			return $length === null ? implode(\'\', array_slice($ent_arr, $start)) : implode(\'\', array_slice($ent_arr, $start, $length));'),
-		'strtolower' => $utf8 ? (function_exists('mb_strtolower') ? create_function('$string', '
-			return mb_strtolower($string, \'UTF-8\');') : create_function('$string', '
-			global $sourcedir;
-			require_once($sourcedir . \'/Subs-Charset.php\');
-			return utf8_strtolower($string);')) : 'strtolower',
-		'strtoupper' => $utf8 ? (function_exists('mb_strtoupper') ? create_function('$string', '
-			return mb_strtoupper($string, \'UTF-8\');') : create_function('$string', '
-			global $sourcedir;
-			require_once($sourcedir . \'/Subs-Charset.php\');
-			return utf8_strtoupper($string);')) : 'strtoupper',
-		'truncate' => create_function('$string, $length', (empty($modSettings['disableEntityCheck']) ? '
-			global $smcFunc;
-			$string = ' . implode('$string', $ent_check) . ';' : '') . '
-			preg_match(\'~^(' . $ent_list . '|.){\' . $smcFunc[\'strlen\'](substr($string, 0, $length)) . \'}~'.  ($utf8 ? 'u' : '') . '\', $string, $matches);
-			$string = $matches[0];
-			while (strlen($string) > $length)
-				$string = preg_replace(\'~(?:' . $ent_list . '|.)$~'.  ($utf8 ? 'u' : '') . '\', \'\', $string);
-			return $string;'),
-		'ucfirst' => $utf8 ? create_function('$string', '
-			global $smcFunc;
-			return $smcFunc[\'strtoupper\']($smcFunc[\'substr\']($string, 0, 1)) . $smcFunc[\'substr\']($string, 1);') : 'ucfirst',
-		'ucwords' => $utf8 ? create_function('$string', '
-			global $smcFunc;
-			$words = preg_split(\'~([\s\r\n\t]+)~\', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
-			for ($i = 0, $n = count($words); $i < $n; $i += 2)
-				$words[$i] = $smcFunc[\'ucfirst\']($words[$i]);
-			return implode(\'\', $words);') : 'ucwords',
-	);
+                $result = array_search($needle_arr[0], array_slice($haystack_arr, $offset));
+                while (is_int($result))
+                {
+                    $offset += $result;
+                    if (array_slice($haystack_arr, $offset, $needle_size) === $needle_arr)
+                        return $offset;
+                    $result = array_search($needle_arr[0], array_slice($haystack_arr, ++$offset));
+                }
+                return false;
+            }'),
+        'substr' => create_function('$string, $start, $length = null', '
+            global $smcFunc;
+            $ent_arr = preg_split(\'~(&#' . (empty($modSettings['disableEntityCheck']) ? '\d{1,7}' : '021') . ';|&quot;|&amp;|&lt;|&gt;|&nbsp;|.)~' . ($utf8 ? 'u' : '') . '\', ' . implode('$string', $ent_check) . ', -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            return $length === null ? implode(\'\', array_slice($ent_arr, $start)) : implode(\'\', array_slice($ent_arr, $start, $length));'),
+        'strtolower' => $utf8 ? (function_exists('mb_strtolower') ? create_function('$string', '
+            return mb_strtolower($string, \'UTF-8\');') : create_function('$string', '
+            global $sourcedir;
+            require_once($sourcedir . \'/Subs-Charset.php\');
+            return utf8_strtolower($string);')) : 'strtolower',
+        'strtoupper' => $utf8 ? (function_exists('mb_strtoupper') ? create_function('$string', '
+            return mb_strtoupper($string, \'UTF-8\');') : create_function('$string', '
+            global $sourcedir;
+            require_once($sourcedir . \'/Subs-Charset.php\');
+            return utf8_strtoupper($string);')) : 'strtoupper',
+        'truncate' => create_function('$string, $length', (empty($modSettings['disableEntityCheck']) ? '
+            global $smcFunc;
+            $string = ' . implode('$string', $ent_check) . ';' : '') . '
+            preg_match(\'~^(' . $ent_list . '|.){\' . $smcFunc[\'strlen\'](substr($string, 0, $length)) . \'}~'.  ($utf8 ? 'u' : '') . '\', $string, $matches);
+            $string = $matches[0];
+            while (strlen($string) > $length)
+                $string = preg_replace(\'~(?:' . $ent_list . '|.)$~'.  ($utf8 ? 'u' : '') . '\', \'\', $string);
+            return $string;'),
+        'ucfirst' => $utf8 ? create_function('$string', '
+            global $smcFunc;
+            return $smcFunc[\'strtoupper\']($smcFunc[\'substr\']($string, 0, 1)) . $smcFunc[\'substr\']($string, 1);') : 'ucfirst',
+        'ucwords' => $utf8 ? create_function('$string', '
+            global $smcFunc;
+            $words = preg_split(\'~([\s\r\n\t]+)~\', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+            for ($i = 0, $n = count($words); $i < $n; $i += 2)
+                $words[$i] = $smcFunc[\'ucfirst\']($words[$i]);
+            return implode(\'\', $words);') : 'ucwords',
+    );
 
-	// setting the timezone is a requirement for some functions in PHP >= 5.1.
-	if (isset($modSettings['default_timezone'])
+    // setting the timezone is a requirement for some functions in PHP >= 5.1.
+    if (isset($modSettings['default_timezone'])
         && function_exists('date_default_timezone_set')) {
-		    date_default_timezone_set($modSettings['default_timezone']);
+            date_default_timezone_set($modSettings['default_timezone']);
     }
 
     return true;
@@ -1884,27 +1885,27 @@ function smfapi_reloadSettings()
  */
 function smfapi_loadUserSettings()
 {
-	global $modSettings, $user_settings, $sourcedir, $smcFunc;
-	global $cookiename, $user_info, $language;
-	
-	$id_member = 0;
+    global $modSettings, $user_settings, $sourcedir, $smcFunc;
+    global $cookiename, $user_info, $language;
+    
+    $id_member = 0;
 
     if (0 == $id_member && isset($_COOKIE[$cookiename])) {
         $cookieData = stripslashes($_COOKIE[$cookiename]);
-		// fix a security hole in PHP 4.3.9 and below...
-		if (preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~i', $cookieData) == 1) {
-			list ($id_member, $password) = @unserialize($cookieData);
-			$id_member = !empty($id_member) && strlen($password) > 0 ? (int) $id_member : 0;
-		} else {
-			$id_member = 0;
+        // fix a security hole in PHP 4.3.9 and below...
+        if (preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~i', $cookieData) == 1) {
+            list ($id_member, $password) = @unserialize($cookieData);
+            $id_member = !empty($id_member) && strlen($password) > 0 ? (int) $id_member : 0;
+        } else {
+            $id_member = 0;
         }
-	} elseif (empty($id_member) && isset($_SESSION['login_' . $cookiename]) && ($_SESSION['USER_AGENT'] == $_SERVER['HTTP_USER_AGENT'] || !empty($modSettings['disableCheckUA']))) {
-		// !!! perhaps we can do some more checking on this, such as on the first octet of the IP?
-		list ($id_member, $password, $login_span) = @unserialize($_SESSION['login_' . $cookiename]);
-		$id_member = !empty($id_member) && strlen($password) == 40 && $login_span > time() ? (int) $id_member : 0;
-	}
-	
-	if (0 == $id_member) {
+    } elseif (empty($id_member) && isset($_SESSION['login_' . $cookiename]) && ($_SESSION['USER_AGENT'] == $_SERVER['HTTP_USER_AGENT'] || !empty($modSettings['disableCheckUA']))) {
+        // !!! perhaps we can do some more checking on this, such as on the first octet of the IP?
+        list ($id_member, $password, $login_span) = @unserialize($_SESSION['login_' . $cookiename]);
+        $id_member = !empty($id_member) && strlen($password) == 40 && $login_span > time() ? (int) $id_member : 0;
+    }
+    
+    if (0 == $id_member) {
         $unserializedData = array();
         $success = funserialize($cookieData, $unserializedData);
         if ($success) {
@@ -1913,101 +1914,101 @@ function smfapi_loadUserSettings()
         } else {
             // they're either a guest or your cookie is not visible
         }
-	}
+    }
 
-	// only load this stuff if the user isn't a guest.
-	if ($id_member != 0) {
-		// is the member data cached?
-		if (empty($modSettings['cache_enable']) || $modSettings['cache_enable'] < 2
+    // only load this stuff if the user isn't a guest.
+    if ($id_member != 0) {
+        // is the member data cached?
+        if (empty($modSettings['cache_enable']) || $modSettings['cache_enable'] < 2
             || ($user_settings = smfapi_cacheGetData('user_settings-' . $id_member, 60)) == null) {
-			    $request = $smcFunc['db_query']('', '
-				    SELECT mem.*, IFNULL(a.id_attach, 0) AS id_attach, a.filename, a.attachment_type
-				    FROM {db_prefix}members AS mem
-					    LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = {int:id_member})
-				    WHERE mem.id_member = {int:id_member}
-				    LIMIT 1',
-				    array(
-					    'id_member' => $id_member,
-				    )
-			    );
+                $request = $smcFunc['db_query']('', '
+                    SELECT mem.*, IFNULL(a.id_attach, 0) AS id_attach, a.filename, a.attachment_type
+                    FROM {db_prefix}members AS mem
+                        LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = {int:id_member})
+                    WHERE mem.id_member = {int:id_member}
+                    LIMIT 1',
+                    array(
+                        'id_member' => $id_member,
+                    )
+                );
 
-			    $user_settings = $smcFunc['db_fetch_assoc']($request);
-			    $smcFunc['db_free_result']($request);
+                $user_settings = $smcFunc['db_fetch_assoc']($request);
+                $smcFunc['db_free_result']($request);
 
-			    if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2) {
-				    smfapi_cachePutData('user_settings-' . $id_member, $user_settings, 60);
+                if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2) {
+                    smfapi_cachePutData('user_settings-' . $id_member, $user_settings, 60);
                 }
-		}
-	}
+        }
+    }
 
-	// found 'im, let's set up the variables.
-	if (0 != $id_member) {
-		$username = $user_settings['member_name'];
+    // found 'im, let's set up the variables.
+    if (0 != $id_member) {
+        $username = $user_settings['member_name'];
 
-		if (empty($user_settings['additional_groups'])) {
-			$user_info = array(
-				'groups' => array($user_settings['id_group'], $user_settings['id_post_group'])
-			);
+        if (empty($user_settings['additional_groups'])) {
+            $user_info = array(
+                'groups' => array($user_settings['id_group'], $user_settings['id_post_group'])
+            );
         } else {
-			$user_info = array(
-				'groups' => array_merge(
-					array($user_settings['id_group'], $user_settings['id_post_group']),
-					explode(',', $user_settings['additional_groups'])
-				)
-			);
+            $user_info = array(
+                'groups' => array_merge(
+                    array($user_settings['id_group'], $user_settings['id_post_group']),
+                    explode(',', $user_settings['additional_groups'])
+                )
+            );
         }
 
-		// because history has proven that it is possible for groups to go bad - clean up in case.
-		foreach ($user_info['groups'] as $k => $v) {
-			$user_info['groups'][$k] = (int) $v;
+        // because history has proven that it is possible for groups to go bad - clean up in case.
+        foreach ($user_info['groups'] as $k => $v) {
+            $user_info['groups'][$k] = (int) $v;
         }
 
-		// this is a logged in user, so definitely not a spider.
-		$user_info['possibly_robot'] = false;
-	} else {
-		// this is what a guest's variables should be.
-		$username = '';
-		$user_info = array('groups' => array(-1));
-		$user_settings = array();
+        // this is a logged in user, so definitely not a spider.
         $user_info['possibly_robot'] = false;
-	}
+    } else {
+        // this is what a guest's variables should be.
+        $username = '';
+        $user_info = array('groups' => array(-1));
+        $user_settings = array();
+        $user_info['possibly_robot'] = false;
+    }
 
-	// set up the $user_info array.
-	$user_info += array(
-		'id' => $id_member,
-		'username' => $username,
-		'name' => isset($user_settings['real_name']) ? $user_settings['real_name'] : '',
-		'email' => isset($user_settings['email_address']) ? $user_settings['email_address'] : '',
-		'passwd' => isset($user_settings['passwd']) ? $user_settings['passwd'] : '',
-		'language' => empty($user_settings['lngfile']) || empty($modSettings['userLanguage']) ? $language : $user_settings['lngfile'],
-		'is_guest' => $id_member == 0,
-		'is_admin' => in_array(1, $user_info['groups']),
-		'theme' => empty($user_settings['id_theme']) ? 0 : $user_settings['id_theme'],
-		'last_login' => empty($user_settings['last_login']) ? 0 : $user_settings['last_login'],
-		'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
-		'ip2' => isset($_SERVER['BAN_CHECK_IP']) ? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
-		'posts' => empty($user_settings['posts']) ? 0 : $user_settings['posts'],
-		'time_format' => empty($user_settings['time_format']) ? $modSettings['time_format'] : $user_settings['time_format'],
-		'time_offset' => empty($user_settings['time_offset']) ? 0 : $user_settings['time_offset'],
-		'avatar' => array(
-			'url' => isset($user_settings['avatar']) ? $user_settings['avatar'] : '',
-			'filename' => empty($user_settings['filename']) ? '' : $user_settings['filename'],
-			'custom_dir' => !empty($user_settings['attachment_type']) && $user_settings['attachment_type'] == 1,
-			'id_attach' => isset($user_settings['id_attach']) ? $user_settings['id_attach'] : 0
-		),
-		'smiley_set' => isset($user_settings['smiley_set']) ? $user_settings['smiley_set'] : '',
-		'messages' => empty($user_settings['instant_messages']) ? 0 : $user_settings['instant_messages'],
-		'unread_messages' => empty($user_settings['unread_messages']) ? 0 : $user_settings['unread_messages'],
-		'total_time_logged_in' => empty($user_settings['total_time_logged_in']) ? 0 : $user_settings['total_time_logged_in'],
-		'buddies' => !empty($modSettings['enable_buddylist']) && !empty($user_settings['buddy_list']) ? explode(',', $user_settings['buddy_list']) : array(),
-		'ignoreboards' => !empty($user_settings['ignore_boards']) && !empty($modSettings['allow_ignore_boards']) ? explode(',', $user_settings['ignore_boards']) : array(),
-		'ignoreusers' => !empty($user_settings['pm_ignore_list']) ? explode(',', $user_settings['pm_ignore_list']) : array(),
-		'warning' => isset($user_settings['warning']) ? $user_settings['warning'] : 0,
-		'permissions' => array(),
-	);
-	$user_info['groups'] = array_unique($user_info['groups']);
+    // set up the $user_info array.
+    $user_info += array(
+        'id' => $id_member,
+        'username' => $username,
+        'name' => isset($user_settings['real_name']) ? $user_settings['real_name'] : '',
+        'email' => isset($user_settings['email_address']) ? $user_settings['email_address'] : '',
+        'passwd' => isset($user_settings['passwd']) ? $user_settings['passwd'] : '',
+        'language' => empty($user_settings['lngfile']) || empty($modSettings['userLanguage']) ? $language : $user_settings['lngfile'],
+        'is_guest' => $id_member == 0,
+        'is_admin' => in_array(1, $user_info['groups']),
+        'theme' => empty($user_settings['id_theme']) ? 0 : $user_settings['id_theme'],
+        'last_login' => empty($user_settings['last_login']) ? 0 : $user_settings['last_login'],
+        'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR']: $HTTP_SERVER_VARS['REMOTE_ADDR'],
+        'ip2' => isset($_SERVER['BAN_CHECK_IP']) ? $_SERVER['BAN_CHECK_IP']: $_SERVER['REMOTE_ADDR'],
+        'posts' => empty($user_settings['posts']) ? 0 : $user_settings['posts'],
+        'time_format' => empty($user_settings['time_format']) ? $modSettings['time_format'] : $user_settings['time_format'],
+        'time_offset' => empty($user_settings['time_offset']) ? 0 : $user_settings['time_offset'],
+        'avatar' => array(
+            'url' => isset($user_settings['avatar']) ? $user_settings['avatar'] : '',
+            'filename' => empty($user_settings['filename']) ? '' : $user_settings['filename'],
+            'custom_dir' => !empty($user_settings['attachment_type']) && $user_settings['attachment_type'] == 1,
+            'id_attach' => isset($user_settings['id_attach']) ? $user_settings['id_attach'] : 0
+        ),
+        'smiley_set' => isset($user_settings['smiley_set']) ? $user_settings['smiley_set'] : '',
+        'messages' => empty($user_settings['instant_messages']) ? 0 : $user_settings['instant_messages'],
+        'unread_messages' => empty($user_settings['unread_messages']) ? 0 : $user_settings['unread_messages'],
+        'total_time_logged_in' => empty($user_settings['total_time_logged_in']) ? 0 : $user_settings['total_time_logged_in'],
+        'buddies' => !empty($modSettings['enable_buddylist']) && !empty($user_settings['buddy_list']) ? explode(',', $user_settings['buddy_list']) : array(),
+        'ignoreboards' => !empty($user_settings['ignore_boards']) && !empty($modSettings['allow_ignore_boards']) ? explode(',', $user_settings['ignore_boards']) : array(),
+        'ignoreusers' => !empty($user_settings['pm_ignore_list']) ? explode(',', $user_settings['pm_ignore_list']) : array(),
+        'warning' => isset($user_settings['warning']) ? $user_settings['warning'] : 0,
+        'permissions' => array(),
+    );
+    $user_info['groups'] = array_unique($user_info['groups']);
 
-	return true;
+    return true;
 }
 
 /**
@@ -2021,78 +2022,78 @@ function smfapi_loadUserSettings()
  */
 function smfapi_loadSession()
 {
-	global $HTTP_SESSION_VARS, $modSettings, $boardurl, $sc;
+    global $HTTP_SESSION_VARS, $modSettings, $boardurl, $sc;
 
-	// attempt to change a few PHP settings.
-	@ini_set('session.use_cookies', true);
-	@ini_set('session.use_only_cookies', false);
-	@ini_set('url_rewriter.tags', '');
-	@ini_set('session.use_trans_sid', false);
-	@ini_set('arg_separator.output', '&amp;');
+    // attempt to change a few PHP settings.
+    @ini_set('session.use_cookies', true);
+    @ini_set('session.use_only_cookies', false);
+    @ini_set('url_rewriter.tags', '');
+    @ini_set('session.use_trans_sid', false);
+    @ini_set('arg_separator.output', '&amp;');
 
-	if (!empty($modSettings['globalCookies'])) {
-		$parsed_url = parse_url($boardurl);
+    if (!empty($modSettings['globalCookies'])) {
+        $parsed_url = parse_url($boardurl);
 
-		if (preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) == 0
+        if (preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) == 0
             && preg_match('~(?:[^\.]+\.)?([^\.]{2,}\..+)\z~i', $parsed_url['host'], $parts) == 1) {
-			    @ini_set('session.cookie_domain', '.' . $parts[1]);
+                @ini_set('session.cookie_domain', '.' . $parts[1]);
         }
-	}
+    }
 
-	// if it's already been started... probably best to skip this.
-	if ('' == session_id()) {
+    // if it's already been started... probably best to skip this.
+    if ('' == session_id()) {
 
-		// this is here to stop people from using bad junky PHPSESSIDs.
-		if (isset($_REQUEST[session_name()])
+        // this is here to stop people from using bad junky PHPSESSIDs.
+        if (isset($_REQUEST[session_name()])
             && preg_match('~^[A-Za-z0-9]{16,32}$~', $_REQUEST[session_name()]) == 0
             && !isset($_COOKIE[session_name()])) {
 
-			$session_id = md5(md5('smf_sess_' . time()) . mt_rand());
-			$_REQUEST[session_name()] = $session_id;
-			$_GET[session_name()] = $session_id;
-			$_POST[session_name()] = $session_id;
-		}
+            $session_id = md5(md5('smf_sess_' . time()) . mt_rand());
+            $_REQUEST[session_name()] = $session_id;
+            $_GET[session_name()] = $session_id;
+            $_POST[session_name()] = $session_id;
+        }
 
-		// use database sessions? (they don't work in 4.1.x!)
-		if (!empty($modSettings['databaseSession_enable'])
+        // use database sessions? (they don't work in 4.1.x!)
+        if (!empty($modSettings['databaseSession_enable'])
             && @version_compare(PHP_VERSION, '4.2.0') != -1) {
 
-			session_set_save_handler('smfapi_sessionOpen', 'smfapi_sessionClose',
+            session_set_save_handler('smfapi_sessionOpen', 'smfapi_sessionClose',
                                      'smfapi_sessionRead', 'smfapi_sessionWrite',
                                      'smfapi_sessionDestroy', 'smfapi_sessionGC');
-			@ini_set('session.gc_probability', '1');
-		} elseif (@ini_get('session.gc_maxlifetime') <= 1440
+            @ini_set('session.gc_probability', '1');
+        } elseif (@ini_get('session.gc_maxlifetime') <= 1440
                   && !empty($modSettings['databaseSession_lifetime'])) {
 
-		    @ini_set('session.gc_maxlifetime', max($modSettings['databaseSession_lifetime'], 60));
+            @ini_set('session.gc_maxlifetime', max($modSettings['databaseSession_lifetime'], 60));
         }
 
-		// use cache setting sessions?
-		if (empty($modSettings['databaseSession_enable'])
+        // use cache setting sessions?
+        if (empty($modSettings['databaseSession_enable'])
             && !empty($modSettings['cache_enable']) && php_sapi_name() != 'cli') {
 
-			if (function_exists('mmcache_set_session_handlers')) {
-				mmcache_set_session_handlers();
+            if (function_exists('mmcache_set_session_handlers')) {
+                mmcache_set_session_handlers();
             } elseif (function_exists('eaccelerator_set_session_handlers')) {
-				eaccelerator_set_session_handlers();
+                eaccelerator_set_session_handlers();
             }
-		}
-
-		session_start();
-
-		// change it so the cache settings are a little looser than default.
-		if (!empty($modSettings['databaseSession_loose'])) {
-			header('Cache-Control: private');
         }
-	}
 
-	// while PHP 4.1.x should use $_SESSION, it seems to need this to do it right.
-	if (@version_compare(PHP_VERSION, '4.2.0') == -1) {
-		$HTTP_SESSION_VARS['php_412_bugfix'] = true;
+        session_start();
+
+        // change it so the cache settings are a little looser than default.
+        if (!empty($modSettings['databaseSession_loose'])) {
+            header('Cache-Control: private');
+        }
     }
 
-	// set the randomly generated code.
-	if (!isset($_SESSION['session_value'])) {
+    // while PHP 4.1.x should use $_SESSION, it seems to need this to do it right.
+    if (@version_compare(PHP_VERSION, '4.2.0') == -1) {
+        $HTTP_SESSION_VARS['php_412_bugfix'] = true;
+    }
+
+    // set the randomly generated code.
+    if (!isset($_SESSION['session_value'])) {
         $_SESSION['session_value'] = md5(session_id() . mt_rand());
     }
 
@@ -2101,7 +2102,7 @@ function smfapi_loadSession()
                                    . session_id() . mt_rand())), 0, rand(7, 12));
     }
 
-	$sc = $_SESSION['session_value'];
+    $sc = $_SESSION['session_value'];
 
     return true;
 }
@@ -2118,7 +2119,7 @@ function smfapi_loadSession()
  */
 function smfapi_sessionOpen($save_path, $session_name)
 {
-	return true;
+    return true;
 }
 
 /**
@@ -2131,7 +2132,7 @@ function smfapi_sessionOpen($save_path, $session_name)
  */
 function smfapi_sessionClose()
 {
-	return true;
+    return true;
 }
 
 /**
@@ -2146,27 +2147,27 @@ function smfapi_sessionClose()
  */
 function smfapi_sessionRead($session_id)
 {
-	global $smcFunc;
+    global $smcFunc;
 
-	if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
-		return false;
+    if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
+        return false;
     }
 
-	// look for it in the database.
-	$result = $smcFunc['db_query']('', '
-		SELECT data
-		FROM {db_prefix}sessions
-		WHERE session_id = {string:session_id}
-		LIMIT 1',
-		array(
-			'session_id' => $session_id,
-		)
-	);
-	list ($sess_data) = $smcFunc['db_fetch_row']($result);
-	$smcFunc['db_free_result']($result);
+    // look for it in the database.
+    $result = $smcFunc['db_query']('', '
+        SELECT data
+        FROM {db_prefix}sessions
+        WHERE session_id = {string:session_id}
+        LIMIT 1',
+        array(
+            'session_id' => $session_id,
+        )
+    );
+    list ($sess_data) = $smcFunc['db_fetch_row']($result);
+    $smcFunc['db_free_result']($result);
 
     if (!empty($sess_data)) {
-	    return $sess_data;
+        return $sess_data;
     }
 
     return false;
@@ -2184,35 +2185,35 @@ function smfapi_sessionRead($session_id)
  */
 function smfapi_sessionWrite($session_id, $data)
 {
-	global $smcFunc;
+    global $smcFunc;
 
-	if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
-		return false;
+    if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
+        return false;
     }
 
-	// first try to update an existing row...
-	$result = $smcFunc['db_query']('', '
-		UPDATE {db_prefix}sessions
-		SET data = {string:data}, last_update = {int:last_update}
-		WHERE session_id = {string:session_id}',
-		array(
-			'last_update' => time(),
-			'data' => $data,
-			'session_id' => $session_id,
-		)
-	);
+    // first try to update an existing row...
+    $result = $smcFunc['db_query']('', '
+        UPDATE {db_prefix}sessions
+        SET data = {string:data}, last_update = {int:last_update}
+        WHERE session_id = {string:session_id}',
+        array(
+            'last_update' => time(),
+            'data' => $data,
+            'session_id' => $session_id,
+        )
+    );
 
-	// if that didn't work, try inserting a new one.
-	if ($smcFunc['db_affected_rows']() == 0) {
-		$result = $smcFunc['db_insert']('ignore',
-			'{db_prefix}sessions',
-			array('session_id' => 'string', 'data' => 'string', 'last_update' => 'int'),
-			array($session_id, $data, time()),
-			array('session_id')
-		);
+    // if that didn't work, try inserting a new one.
+    if ($smcFunc['db_affected_rows']() == 0) {
+        $result = $smcFunc['db_insert']('ignore',
+            '{db_prefix}sessions',
+            array('session_id' => 'string', 'data' => 'string', 'last_update' => 'int'),
+            array($session_id, $data, time()),
+            array('session_id')
+        );
     }
 
-	return true;
+    return true;
 }
 
 /**
@@ -2226,20 +2227,20 @@ function smfapi_sessionWrite($session_id, $data)
  */
 function smfapi_sessionDestroy($session_id)
 {
-	global $smcFunc;
+    global $smcFunc;
 
-	if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
-		return false;
+    if (preg_match('~^[A-Za-z0-9]{16,32}$~', $session_id) == 0) {
+        return false;
     }
 
-	// just delete the row...
-	return $smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}sessions
-		WHERE session_id = {string:session_id}',
-		array(
-			'session_id' => $session_id,
-		)
-	);
+    // just delete the row...
+    return $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}sessions
+        WHERE session_id = {string:session_id}',
+        array(
+            'session_id' => $session_id,
+        )
+    );
 }
 
 /**
@@ -2253,24 +2254,24 @@ function smfapi_sessionDestroy($session_id)
  */
 function smfapi_sessionGC($max_lifetime)
 {
-	global $modSettings, $smcFunc;
+    global $modSettings, $smcFunc;
 
-	// just set to the default or lower?  ignore it for a higher value. (hopefully)
-	if (!empty($modSettings['databaseSession_lifetime'])
+    // just set to the default or lower?  ignore it for a higher value. (hopefully)
+    if (!empty($modSettings['databaseSession_lifetime'])
         && ($max_lifetime <= 1440
         || $modSettings['databaseSession_lifetime'] > $max_lifetime)) {
 
-		$max_lifetime = max($modSettings['databaseSession_lifetime'], 60);
+        $max_lifetime = max($modSettings['databaseSession_lifetime'], 60);
     }
 
-	// clean up ;).
-	return $smcFunc['db_query']('', '
-		DELETE FROM {db_prefix}sessions
-		WHERE last_update < {int:last_update}',
-		array(
-			'last_update' => time() - $max_lifetime,
-		)
-	);
+    // clean up ;).
+    return $smcFunc['db_query']('', '
+        DELETE FROM {db_prefix}sessions
+        WHERE last_update < {int:last_update}',
+        array(
+            'last_update' => time() - $max_lifetime,
+        )
+    );
 }
 
 /**
@@ -2283,25 +2284,25 @@ function smfapi_sessionGC($max_lifetime)
  */
 function smfapi_loadDatabase()
 {
-	global $db_persist, $db_connection, $db_server, $db_user, $db_passwd;
-	global $db_type, $db_name, $sourcedir, $db_prefix;
+    global $db_persist, $db_connection, $db_server, $db_user, $db_passwd;
+    global $db_type, $db_name, $sourcedir, $db_prefix;
 
-	// figure out what type of database we are using.
-	if (empty($db_type) || !file_exists($sourcedir . '/Subs-Db-' . $db_type . '.php')) {
-		$db_type = 'mysql';
+    // figure out what type of database we are using.
+    if (empty($db_type) || !file_exists($sourcedir . '/Subs-Db-' . $db_type . '.php')) {
+        $db_type = 'mysql';
     }
 
-	// load the file for the database (safe to load)
-	require_once($sourcedir . '/Subs-Db-' . $db_type . '.php');
+    // load the file for the database (safe to load)
+    require_once($sourcedir . '/Subs-Db-' . $db_type . '.php');
 
-	// make connection
-	if (empty($db_connection)) {
-		$db_connection = smf_db_initiate($db_server, $db_name, $db_user, $db_passwd, $db_prefix, array('persist' => $db_persist, 'dont_select_db' => SMF == 'API'));
+    // make connection
+    if (empty($db_connection)) {
+        $db_connection = smf_db_initiate($db_server, $db_name, $db_user, $db_passwd, $db_prefix, array('persist' => $db_persist, 'dont_select_db' => SMF == 'API'));
     }
 
-	// safe guard here, if there isn't a valid connection lets put a stop to it.
-	if (!$db_connection) {
-		return false;
+    // safe guard here, if there isn't a valid connection lets put a stop to it.
+    if (!$db_connection) {
+        return false;
     }
 
     // defined in Subs-Db-*.php
@@ -2323,99 +2324,99 @@ function smfapi_loadDatabase()
  */
 function smfapi_cachePutData($key, $value, $ttl = 120)
 {
-	global $boardurl, $sourcedir, $modSettings, $memcached;
-	global $cache_hits, $cache_count, $db_show_debug, $cachedir;
+    global $boardurl, $sourcedir, $modSettings, $memcached;
+    global $cache_hits, $cache_count, $db_show_debug, $cachedir;
 
-	if (empty($modSettings['cache_enable']) && !empty($modSettings)) {
-		return;
+    if (empty($modSettings['cache_enable']) && !empty($modSettings)) {
+        return;
     }
 
-	$cache_count = isset($cache_count) ? $cache_count + 1 : 1;
+    $cache_count = isset($cache_count) ? $cache_count + 1 : 1;
 
-	if (isset($db_show_debug) && $db_show_debug === true) {
-		$cache_hits[$cache_count] = array('k' => $key,
+    if (isset($db_show_debug) && $db_show_debug === true) {
+        $cache_hits[$cache_count] = array('k' => $key,
                                           'd' => 'put',
                                           's' => $value === null ? 0 : strlen(serialize($value)));
-		$st = microtime();
-	}
+        $st = microtime();
+    }
 
-	$key = md5($boardurl . filemtime($sourcedir . '/Load.php'))
+    $key = md5($boardurl . filemtime($sourcedir . '/Load.php'))
            . '-SMF-' . strtr($key, ':', '-');
-	$value = $value === null ? null : serialize($value);
+    $value = $value === null ? null : serialize($value);
 
-	// eAccelerator...
-	if (function_exists('eaccelerator_put')) {
-		if (mt_rand(0, 10) == 1) {
-			eaccelerator_gc();
-        }
-
-		if ($value === null) {
-			@eaccelerator_rm($key);
-        } else {
-			eaccelerator_put($key, $value, $ttl);
-        }
-	}
-	// turck MMCache?
-	elseif (function_exists('mmcache_put')) {
-		if (mt_rand(0, 10) == 1) {
-			mmcache_gc();
+    // eAccelerator...
+    if (function_exists('eaccelerator_put')) {
+        if (mt_rand(0, 10) == 1) {
+            eaccelerator_gc();
         }
 
-		if ($value === null) {
-			@mmcache_rm($key);
+        if ($value === null) {
+            @eaccelerator_rm($key);
         } else {
-			mmcache_put($key, $value, $ttl);
+            eaccelerator_put($key, $value, $ttl);
         }
-	}
-	// alternative PHP Cache, ahoy!
-	elseif (function_exists('apc_store')) {
-		// An extended key is needed to counteract a bug in APC.
-		if ($value === null) {
-			apc_delete($key . 'smf');
+    }
+    // turck MMCache?
+    elseif (function_exists('mmcache_put')) {
+        if (mt_rand(0, 10) == 1) {
+            mmcache_gc();
+        }
+
+        if ($value === null) {
+            @mmcache_rm($key);
         } else {
-			apc_store($key . 'smf', $value, $ttl);
+            mmcache_put($key, $value, $ttl);
         }
-	}
-	// zend Platform/ZPS/etc.
-	elseif (function_exists('output_cache_put')) {
-		output_cache_put($key, $value);
+    }
+    // alternative PHP Cache, ahoy!
+    elseif (function_exists('apc_store')) {
+        // An extended key is needed to counteract a bug in APC.
+        if ($value === null) {
+            apc_delete($key . 'smf');
+        } else {
+            apc_store($key . 'smf', $value, $ttl);
+        }
+    }
+    // zend Platform/ZPS/etc.
+    elseif (function_exists('output_cache_put')) {
+        output_cache_put($key, $value);
     } elseif (function_exists('xcache_set') && ini_get('xcache.var_size') > 0) {
-		if ($value === null) {
-			xcache_unset($key);
+        if ($value === null) {
+            xcache_unset($key);
         } else {
-			xcache_set($key, $value, $ttl);
+            xcache_set($key, $value, $ttl);
         }
-	}
-	// otherwise custom cache?
-	else {
-		if ($value === null) {
-			@unlink($cachedir . '/data_' . $key . '.php');
+    }
+    // otherwise custom cache?
+    else {
+        if ($value === null) {
+            @unlink($cachedir . '/data_' . $key . '.php');
         } else {
-			$cache_data = '<' . '?' . 'php if (!defined(\'SMF\')) die; if ('
+            $cache_data = '<' . '?' . 'php if (!defined(\'SMF\')) die; if ('
                           . (time() + $ttl)
                           . ' < time()) $expired = true; else{$expired = false; $value = \''
                           . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
-			$fh = @fopen($cachedir . '/data_' . $key . '.php', 'w');
+            $fh = @fopen($cachedir . '/data_' . $key . '.php', 'w');
 
-			if ($fh) {
-				// write the file.
-				set_file_buffer($fh, 0);
-				flock($fh, LOCK_EX);
-				$cache_bytes = fwrite($fh, $cache_data);
-				flock($fh, LOCK_UN);
-				fclose($fh);
+            if ($fh) {
+                // write the file.
+                set_file_buffer($fh, 0);
+                flock($fh, LOCK_EX);
+                $cache_bytes = fwrite($fh, $cache_data);
+                flock($fh, LOCK_UN);
+                fclose($fh);
 
-				// check that the cache write was successful; all the data should be written
-				// if it fails due to low diskspace, remove the cache file
-				if ($cache_bytes != strlen($cache_data)) {
-					@unlink($cachedir . '/data_' . $key . '.php');
+                // check that the cache write was successful; all the data should be written
+                // if it fails due to low diskspace, remove the cache file
+                if ($cache_bytes != strlen($cache_data)) {
+                    @unlink($cachedir . '/data_' . $key . '.php');
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
-	if (isset($db_show_debug) && $db_show_debug === true) {
-		$cache_hits[$cache_count]['t'] = array_sum(explode(' ', microtime())) - array_sum(explode(' ', $st));
+    if (isset($db_show_debug) && $db_show_debug === true) {
+        $cache_hits[$cache_count]['t'] = array_sum(explode(' ', microtime())) - array_sum(explode(' ', $st));
     }
 
     return;
@@ -2433,64 +2434,64 @@ function smfapi_cachePutData($key, $value, $ttl = 120)
  */
 function smfapi_cacheGetData($key, $ttl = 120)
 {
-	global $boardurl, $sourcedir, $modSettings, $memcached;
-	global $cache_hits, $cache_count, $db_show_debug, $cachedir;
+    global $boardurl, $sourcedir, $modSettings, $memcached;
+    global $cache_hits, $cache_count, $db_show_debug, $cachedir;
 
-	if (empty($modSettings['cache_enable']) && !empty($modSettings)) {
-		return;
+    if (empty($modSettings['cache_enable']) && !empty($modSettings)) {
+        return;
     }
 
-	$cache_count = isset($cache_count) ? $cache_count + 1 : 1;
+    $cache_count = isset($cache_count) ? $cache_count + 1 : 1;
 
-	if (isset($db_show_debug) && $db_show_debug === true) {
-		$cache_hits[$cache_count] = array('k' => $key, 'd' => 'get');
-		$st = microtime();
-	}
+    if (isset($db_show_debug) && $db_show_debug === true) {
+        $cache_hits[$cache_count] = array('k' => $key, 'd' => 'get');
+        $st = microtime();
+    }
 
-	$key = md5($boardurl . filemtime($sourcedir . '/Load.php'))
+    $key = md5($boardurl . filemtime($sourcedir . '/Load.php'))
            . '-SMF-' . strtr($key, ':', '-');
 
-	// again, eAccelerator.
-	if (function_exists('eaccelerator_get')) {
-		$value = eaccelerator_get($key);
+    // again, eAccelerator.
+    if (function_exists('eaccelerator_get')) {
+        $value = eaccelerator_get($key);
     }
-	// the older, but ever-stable, Turck MMCache...
-	elseif (function_exists('mmcache_get')) {
-		$value = mmcache_get($key);
+    // the older, but ever-stable, Turck MMCache...
+    elseif (function_exists('mmcache_get')) {
+        $value = mmcache_get($key);
     }
-	// this is the free APC from PECL.
-	elseif (function_exists('apc_fetch')) {
-		$value = apc_fetch($key . 'smf');
+    // this is the free APC from PECL.
+    elseif (function_exists('apc_fetch')) {
+        $value = apc_fetch($key . 'smf');
     }
-	// zend's pricey stuff.
-	elseif (function_exists('output_cache_get')) {
-		$value = output_cache_get($key, $ttl);
+    // zend's pricey stuff.
+    elseif (function_exists('output_cache_get')) {
+        $value = output_cache_get($key, $ttl);
     } elseif (function_exists('xcache_get') && ini_get('xcache.var_size') > 0) {
-		$value = xcache_get($key);
+        $value = xcache_get($key);
     }
-	// otherwise it's SMF data!
-	elseif (file_exists($cachedir . '/data_' . $key . '.php')
+    // otherwise it's SMF data!
+    elseif (file_exists($cachedir . '/data_' . $key . '.php')
             && filesize($cachedir . '/data_' . $key . '.php') > 10) {
 
-		require($cachedir . '/data_' . $key . '.php');
+        require($cachedir . '/data_' . $key . '.php');
 
-		if (!empty($expired) && isset($value)) {
-			@unlink($cachedir . '/data_' . $key . '.php');
-			unset($value);
-		}
-	}
-
-	if (isset($db_show_debug) && $db_show_debug === true) {
-		$cache_hits[$cache_count]['t'] = array_sum(explode(' ', microtime())) - array_sum(explode(' ', $st));
-		$cache_hits[$cache_count]['s'] = isset($value) ? strlen($value) : 0;
-	}
-
-	if (empty($value)) {
-		return null;
+        if (!empty($expired) && isset($value)) {
+            @unlink($cachedir . '/data_' . $key . '.php');
+            unset($value);
+        }
     }
-	// if it's broke, it's broke... so give up on it.
-	else {
-		return @unserialize($value);
+
+    if (isset($db_show_debug) && $db_show_debug === true) {
+        $cache_hits[$cache_count]['t'] = array_sum(explode(' ', microtime())) - array_sum(explode(' ', $st));
+        $cache_hits[$cache_count]['s'] = isset($value) ? strlen($value) : 0;
+    }
+
+    if (empty($value)) {
+        return null;
+    }
+    // if it's broke, it's broke... so give up on it.
+    else {
+        return @unserialize($value);
     }
 }
 
@@ -2507,7 +2508,7 @@ function smfapi_cacheGetData($key, $ttl = 120)
  */
 function smfapi_updateMemberData($member='', $data='')
 {
-	global $modSettings, $user_info, $smcFunc;
+    global $modSettings, $user_info, $smcFunc;
 
     if ('' == $member || '' == $data) {
         return false;
@@ -2523,43 +2524,43 @@ function smfapi_updateMemberData($member='', $data='')
         return false;
     }
 
-	$parameters = array();
+    $parameters = array();
     $condition = 'id_member = {int:member}';
     $parameters['member'] = $member;
 
-	// everything is assumed to be a string unless it's in the below.
+    // everything is assumed to be a string unless it's in the below.
     $knownInts = array(
-		'date_registered', 'posts', 'id_group', 'last_login', 'instant_messages', 'unread_messages',
-		'new_pm', 'pm_prefs', 'gender', 'hide_email', 'show_online', 'pm_email_notify', 'pm_receive_from', 'karma_good', 'karma_bad',
-		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
-		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
-	);
-	$knownFloats = array(
-		'time_offset',
-	);
+        'date_registered', 'posts', 'id_group', 'last_login', 'instant_messages', 'unread_messages',
+        'new_pm', 'pm_prefs', 'gender', 'hide_email', 'show_online', 'pm_email_notify', 'pm_receive_from', 'karma_good', 'karma_bad',
+        'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
+        'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
+    );
+    $knownFloats = array(
+        'time_offset',
+    );
 
-	$setString = '';
-	foreach ($data as $var => $val) {
-		$type = 'string';
-		if (in_array($var, $knownInts)) {
-			$type = 'int';
+    $setString = '';
+    foreach ($data as $var => $val) {
+        $type = 'string';
+        if (in_array($var, $knownInts)) {
+            $type = 'int';
         } elseif (in_array($var, $knownFloats)) {
-			$type = 'float';
+            $type = 'float';
         }
 
-		$setString .= ' ' . $var . ' = {' . $type . ':p_' . $var . '},';
-		$parameters['p_' . $var] = $val;
-	}
+        $setString .= ' ' . $var . ' = {' . $type . ':p_' . $var . '},';
+        $parameters['p_' . $var] = $val;
+    }
 
-	$smcFunc['db_query']('', '
-		UPDATE {db_prefix}members
-		SET' . substr($setString, 0, -1) . '
-		WHERE ' . $condition,
-		$parameters
-	);
+    $smcFunc['db_query']('', '
+        UPDATE {db_prefix}members
+        SET' . substr($setString, 0, -1) . '
+        WHERE ' . $condition,
+        $parameters
+    );
 
-	// clear any caching?
-	if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2
+    // clear any caching?
+    if (!empty($modSettings['cache_enable']) && $modSettings['cache_enable'] >= 2
         && !empty($members)) {
 
         if ($modSettings['cache_enable'] >= 3) {
@@ -2568,7 +2569,7 @@ function smfapi_updateMemberData($member='', $data='')
             smfapi_cachePutData('member_data-minimal-' . $member, null, 120);
         }
         smfapi_cachePutData('user_settings-' . $member, null, 60);
-	}
+    }
 
     return true;
 }
@@ -2583,21 +2584,21 @@ function smfapi_updateMemberData($member='', $data='')
  */
 function smfapi_smfSeedGenerator()
 {
-	global $modSettings;
+    global $modSettings;
 
-	// never existed?
-	if (empty($modSettings['rand_seed'])) {
-		$modSettings['rand_seed'] = microtime() * 1000000;
-		smfapi_updateSettings(array('rand_seed' => $modSettings['rand_seed']));
-	}
+    // never existed?
+    if (empty($modSettings['rand_seed'])) {
+        $modSettings['rand_seed'] = microtime() * 1000000;
+        smfapi_updateSettings(array('rand_seed' => $modSettings['rand_seed']));
+    }
 
-	if (@version_compare(PHP_VERSION, '4.2.0') == -1) {
-		$seed = ($modSettings['rand_seed'] + ((double) microtime() * 1000003)) & 0x7fffffff;
-		mt_srand($seed);
-	}
+    if (@version_compare(PHP_VERSION, '4.2.0') == -1) {
+        $seed = ($modSettings['rand_seed'] + ((double) microtime() * 1000003)) & 0x7fffffff;
+        mt_srand($seed);
+    }
 
-	// update the settings with the new seed
-	smfapi_updateSettings(array('rand_seed' => mt_rand()));
+    // update the settings with the new seed
+    smfapi_updateSettings(array('rand_seed' => mt_rand()));
 
     return true;
 }
@@ -2616,62 +2617,62 @@ function smfapi_smfSeedGenerator()
  */
 function smfapi_updateSettings($changeArray, $update = false, $debug = false)
 {
-	global $modSettings, $smcFunc;
+    global $modSettings, $smcFunc;
 
-	if (empty($changeArray) || !is_array($changeArray)) {
-		return false;
+    if (empty($changeArray) || !is_array($changeArray)) {
+        return false;
     }
 
-	// in some cases, this may be better and faster, but for large sets we don't want so many UPDATEs.
-	if ($update) {
-		foreach ($changeArray as $variable => $value) {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}settings
-				SET value = {' . ($value === false || $value === true ? 'raw' : 'string') . ':value}
-				WHERE variable = {string:variable}',
-				array(
-					'value' => $value === true ? 'value + 1' : ($value === false ? 'value - 1' : $value),
-					'variable' => $variable,
-				)
-			);
-			$modSettings[$variable] = $value === true ? $modSettings[$variable] + 1 : ($value === false ? $modSettings[$variable] - 1 : $value);
-		}
-
-		// clean out the cache and make sure the cobwebs are gone too
-		smfapi_cachePutData('modSettings', null, 90);
-
-		return true;
-	}
-
-	$replaceArray = array();
-	foreach ($changeArray as $variable => $value) {
-		// don't bother if it's already like that ;).
-		if (isset($modSettings[$variable]) && $modSettings[$variable] == $value) {
-			continue;
-        }
-		// if the variable isn't set, but would only be set to nothing'ness, then don't bother setting it.
-		elseif (!isset($modSettings[$variable]) && empty($value)) {
-			continue;
+    // in some cases, this may be better and faster, but for large sets we don't want so many UPDATEs.
+    if ($update) {
+        foreach ($changeArray as $variable => $value) {
+            $smcFunc['db_query']('', '
+                UPDATE {db_prefix}settings
+                SET value = {' . ($value === false || $value === true ? 'raw' : 'string') . ':value}
+                WHERE variable = {string:variable}',
+                array(
+                    'value' => $value === true ? 'value + 1' : ($value === false ? 'value - 1' : $value),
+                    'variable' => $variable,
+                )
+            );
+            $modSettings[$variable] = $value === true ? $modSettings[$variable] + 1 : ($value === false ? $modSettings[$variable] - 1 : $value);
         }
 
-		$replaceArray[] = array($variable, $value);
+        // clean out the cache and make sure the cobwebs are gone too
+        smfapi_cachePutData('modSettings', null, 90);
 
-		$modSettings[$variable] = $value;
-	}
-
-	if (empty($replaceArray)) {
-		return false;
+        return true;
     }
 
-	$smcFunc['db_insert']('replace',
-		'{db_prefix}settings',
-		array('variable' => 'string-255', 'value' => 'string-65534'),
-		$replaceArray,
-		array('variable')
-	);
+    $replaceArray = array();
+    foreach ($changeArray as $variable => $value) {
+        // don't bother if it's already like that ;).
+        if (isset($modSettings[$variable]) && $modSettings[$variable] == $value) {
+            continue;
+        }
+        // if the variable isn't set, but would only be set to nothing'ness, then don't bother setting it.
+        elseif (!isset($modSettings[$variable]) && empty($value)) {
+            continue;
+        }
 
-	// clear the cache of modsettings data
-	smfapi_cachePutData('modSettings', null, 90);
+        $replaceArray[] = array($variable, $value);
+
+        $modSettings[$variable] = $value;
+    }
+
+    if (empty($replaceArray)) {
+        return false;
+    }
+
+    $smcFunc['db_insert']('replace',
+        '{db_prefix}settings',
+        array('variable' => 'string-255', 'value' => 'string-65534'),
+        $replaceArray,
+        array('variable')
+    );
+
+    // clear the cache of modsettings data
+    smfapi_cachePutData('modSettings', null, 90);
 
     return true;
 }
@@ -2689,74 +2690,74 @@ function smfapi_updateSettings($changeArray, $update = false, $debug = false)
  */
 function smfapi_setLoginCookie($cookie_length, $id, $password = '')
 {
-	global $cookiename, $boardurl, $modSettings;
+    global $cookiename, $boardurl, $modSettings;
 
-	// if changing state force them to re-address some permission caching
-	$_SESSION['mc']['time'] = 0;
+    // if changing state force them to re-address some permission caching
+    $_SESSION['mc']['time'] = 0;
 
-	// the cookie may already exist, and have been set with different options
-	$cookie_state = (empty($modSettings['localCookies']) ? 0 : 1) | (empty($modSettings['globalCookies']) ? 0 : 2);
+    // the cookie may already exist, and have been set with different options
+    $cookie_state = (empty($modSettings['localCookies']) ? 0 : 1) | (empty($modSettings['globalCookies']) ? 0 : 2);
 
-	if (isset($_COOKIE[$cookiename])
+    if (isset($_COOKIE[$cookiename])
         && preg_match('~^a:[34]:\{i:0;(i:\d{1,6}|s:[1-8]:"\d{1,8}");i:1;s:(0|40):"([a-fA-F0-9]{40})?";i:2;[id]:\d{1,14};(i:3;i:\d;)?\}$~', stripslashes($_COOKIE[$cookiename])) === 1) {
         $cookieData = stripslashes($_COOKIE[$cookiename]);
-		$array = @unserialize($cookieData);
+        $array = @unserialize($cookieData);
 
-		// out with the old, in with the new
-		if (isset($array[3]) && $array[3] != $cookie_state) {
-			$cookie_url = smfapi_urlParts($array[3] & 1 > 0, $array[3] & 2 > 0);
-			setcookie($cookiename, serialize(array(0, '', 0)), time() - 3600, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
-		}
-	}
-
-	// get the data and path to set it on
-	$data = serialize(empty($id) ? array(0, '', 0) : array($id, $password, time() + $cookie_length, $cookie_state));
-	$cookie_url = smfapi_urlParts(!empty($modSettings['localCookies']), !empty($modSettings['globalCookies']));
-
-	// set the cookie, $_COOKIE, and session variable
-	setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
-
-	// if subdomain-independent cookies are on, unset the subdomain-dependent cookie too
-	if (empty($id) && !empty($modSettings['globalCookies'])) {
-		setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], '', !empty($modSettings['secureCookies']));
+        // out with the old, in with the new
+        if (isset($array[3]) && $array[3] != $cookie_state) {
+            $cookie_url = smfapi_urlParts($array[3] & 1 > 0, $array[3] & 2 > 0);
+            setcookie($cookiename, serialize(array(0, '', 0)), time() - 3600, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
+        }
     }
 
-	// any alias URLs?  this is mainly for use with frames, etc
-	if (!empty($modSettings['forum_alias_urls'])) {
-		$aliases = explode(',', $modSettings['forum_alias_urls']);
+    // get the data and path to set it on
+    $data = serialize(empty($id) ? array(0, '', 0) : array($id, $password, time() + $cookie_length, $cookie_state));
+    $cookie_url = smfapi_urlParts(!empty($modSettings['localCookies']), !empty($modSettings['globalCookies']));
 
-		$temp = $boardurl;
-		foreach ($aliases as $alias) {
-			// fake the $boardurl so we can set a different cookie
-			$alias = strtr(trim($alias), array('http://' => '', 'https://' => ''));
-			$boardurl = 'http://' . $alias;
+    // set the cookie, $_COOKIE, and session variable
+    setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
 
-			$cookie_url = smfapi_urlParts(!empty($modSettings['localCookies']), !empty($modSettings['globalCookies']));
+    // if subdomain-independent cookies are on, unset the subdomain-dependent cookie too
+    if (empty($id) && !empty($modSettings['globalCookies'])) {
+        setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], '', !empty($modSettings['secureCookies']));
+    }
 
-			if ($cookie_url[0] == '') {
-				$cookie_url[0] = strtok($alias, '/');
+    // any alias URLs?  this is mainly for use with frames, etc
+    if (!empty($modSettings['forum_alias_urls'])) {
+        $aliases = explode(',', $modSettings['forum_alias_urls']);
+
+        $temp = $boardurl;
+        foreach ($aliases as $alias) {
+            // fake the $boardurl so we can set a different cookie
+            $alias = strtr(trim($alias), array('http://' => '', 'https://' => ''));
+            $boardurl = 'http://' . $alias;
+
+            $cookie_url = smfapi_urlParts(!empty($modSettings['localCookies']), !empty($modSettings['globalCookies']));
+
+            if ($cookie_url[0] == '') {
+                $cookie_url[0] = strtok($alias, '/');
             }
 
-			setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
-		}
+            setcookie($cookiename, $data, time() + $cookie_length, $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
+        }
 
-		$boardurl = $temp;
-	}
+        $boardurl = $temp;
+    }
 
-	$_COOKIE[$cookiename] = $data;
+    $_COOKIE[$cookiename] = $data;
 
-	// make sure the user logs in with a new session ID
-	if (!isset($_SESSION['login_' . $cookiename])
+    // make sure the user logs in with a new session ID
+    if (!isset($_SESSION['login_' . $cookiename])
         || $_SESSION['login_' . $cookiename] !== $data) {
 
-		// version 4.3.2 didn't store the cookie of the new session
-		if (version_compare(PHP_VERSION, '4.3.2') === 0) {
-			$sessionCookieLifetime = @ini_get('session.cookie_lifetime');
-			setcookie(session_name(), session_id(), time() + (empty($sessionCookieLifetime) ? $cookie_length : $sessionCookieLifetime), $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
-		}
+        // version 4.3.2 didn't store the cookie of the new session
+        if (version_compare(PHP_VERSION, '4.3.2') === 0) {
+            $sessionCookieLifetime = @ini_get('session.cookie_lifetime');
+            setcookie(session_name(), session_id(), time() + (empty($sessionCookieLifetime) ? $cookie_length : $sessionCookieLifetime), $cookie_url[1], $cookie_url[0], !empty($modSettings['secureCookies']));
+        }
 
-		$_SESSION['login_' . $cookiename] = $data;
-	}
+        $_SESSION['login_' . $cookiename] = $data;
+    }
 
     return true;
 }
@@ -2771,17 +2772,17 @@ function smfapi_setLoginCookie($cookie_length, $id, $password = '')
  */
 if (!function_exists('session_regenerate_id')) {
 
-	function session_regenerate_id()
-	{
-		// too late to change the session now
-		if (headers_sent()) {
-			return false;
+    function session_regenerate_id()
+    {
+        // too late to change the session now
+        if (headers_sent()) {
+            return false;
         } else {
             session_id(strtolower(md5(uniqid(mt_rand(), true))));
         }
 
-		return true;
-	}
+        return true;
+    }
 }
 
 /**
@@ -2796,32 +2797,32 @@ if (!function_exists('session_regenerate_id')) {
  */
 function smfapi_urlParts($local, $global)
 {
-	global $boardurl;
+    global $boardurl;
 
-	// parse the URL with PHP to make life easier
-	$parsed_url = parse_url($boardurl);
+    // parse the URL with PHP to make life easier
+    $parsed_url = parse_url($boardurl);
 
-	// are local cookies off?
-	if (empty($parsed_url['path']) || !$local) {
-		$parsed_url['path'] = '';
+    // are local cookies off?
+    if (empty($parsed_url['path']) || !$local) {
+        $parsed_url['path'] = '';
     }
 
-	// globalize cookies across domains (filter out IP-addresses)?
-	if ($global && preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) == 0
+    // globalize cookies across domains (filter out IP-addresses)?
+    if ($global && preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) == 0
         && preg_match('~(?:[^\.]+\.)?([^\.]{2,}\..+)\z~i', $parsed_url['host'], $parts) == 1) {
 
-	    $parsed_url['host'] = '.' . $parts[1];
+        $parsed_url['host'] = '.' . $parts[1];
     }
     // we shouldn't use a host at all if both options are off
-	elseif (!$local && !$global) {
-		$parsed_url['host'] = '';
+    elseif (!$local && !$global) {
+        $parsed_url['host'] = '';
     }
-	// the host also shouldn't be set if there aren't any dots in it
-	elseif (!isset($parsed_url['host']) || strpos($parsed_url['host'], '.') === false) {
-		$parsed_url['host'] = '';
+    // the host also shouldn't be set if there aren't any dots in it
+    elseif (!isset($parsed_url['host']) || strpos($parsed_url['host'], '.') === false) {
+        $parsed_url['host'] = '';
     }
 
-	return array($parsed_url['host'], $parsed_url['path'] . '/');
+    return array($parsed_url['host'], $parsed_url['path'] . '/');
 }
 
 /**
@@ -2837,76 +2838,76 @@ function smfapi_urlParts($local, $global)
  */
 function smfapi_updateStats($type='member', $parameter1 = null, $parameter2 = null)
 {
-	global $sourcedir, $modSettings, $smcFunc;
+    global $sourcedir, $modSettings, $smcFunc;
 
-	switch ($type) {
+    switch ($type) {
 
-	    case 'member':
-		    $changes = array(
-			    'memberlist_updated' => time(),
-		    );
+        case 'member':
+            $changes = array(
+                'memberlist_updated' => time(),
+            );
 
-		    // #1 latest member ID, #2 the real name for a new registration
-		    if (is_numeric($parameter1)) {
-			    $changes['latestMember'] = $parameter1;
-			    $changes['latestRealName'] = $parameter2;
+            // #1 latest member ID, #2 the real name for a new registration
+            if (is_numeric($parameter1)) {
+                $changes['latestMember'] = $parameter1;
+                $changes['latestRealName'] = $parameter2;
 
-			    smfapi_updateSettings(array('totalMembers' => true), true);
-		    }
-		    // we need to calculate the totals.
-		    else {
-			    // Update the latest activated member (highest id_member) and count.
-			    $result = $smcFunc['db_query']('', '
-				    SELECT COUNT(*), MAX(id_member)
-				    FROM {db_prefix}members
-				    WHERE is_activated = {int:is_activated}',
-				    array(
-					    'is_activated' => 1,
-				    )
-			    );
-			    list ($changes['totalMembers'], $changes['latestMember']) = $smcFunc['db_fetch_row']($result);
-			    $smcFunc['db_free_result']($result);
+                smfapi_updateSettings(array('totalMembers' => true), true);
+            }
+            // we need to calculate the totals.
+            else {
+                // Update the latest activated member (highest id_member) and count.
+                $result = $smcFunc['db_query']('', '
+                    SELECT COUNT(*), MAX(id_member)
+                    FROM {db_prefix}members
+                    WHERE is_activated = {int:is_activated}',
+                    array(
+                        'is_activated' => 1,
+                    )
+                );
+                list ($changes['totalMembers'], $changes['latestMember']) = $smcFunc['db_fetch_row']($result);
+                $smcFunc['db_free_result']($result);
 
-			    // Get the latest activated member's display name.
-			    $result = $smcFunc['db_query']('', '
-				    SELECT real_name
-				    FROM {db_prefix}members
-				    WHERE id_member = {int:id_member}
-				    LIMIT 1',
-				    array(
-					    'id_member' => (int) $changes['latestMember'],
-				    )
-			    );
-			    list ($changes['latestRealName']) = $smcFunc['db_fetch_row']($result);
-			    $smcFunc['db_free_result']($result);
+                // Get the latest activated member's display name.
+                $result = $smcFunc['db_query']('', '
+                    SELECT real_name
+                    FROM {db_prefix}members
+                    WHERE id_member = {int:id_member}
+                    LIMIT 1',
+                    array(
+                        'id_member' => (int) $changes['latestMember'],
+                    )
+                );
+                list ($changes['latestRealName']) = $smcFunc['db_fetch_row']($result);
+                $smcFunc['db_free_result']($result);
 
-			    // Are we using registration approval?
-			    if ((!empty($modSettings['registration_method'])
+                // Are we using registration approval?
+                if ((!empty($modSettings['registration_method'])
                     && $modSettings['registration_method'] == 2)
                     || !empty($modSettings['approveAccountDeletion'])) {
 
-				    // Update the amount of members awaiting approval - ignoring COPPA accounts, as you can't approve them until you get permission.
-				    $result = $smcFunc['db_query']('', '
-					    SELECT COUNT(*)
-					    FROM {db_prefix}members
-					    WHERE is_activated IN ({array_int:activation_status})',
-					    array(
-						    'activation_status' => array(3, 4),
-					    )
-				    );
-				    list ($changes['unapprovedMembers']) = $smcFunc['db_fetch_row']($result);
-				    $smcFunc['db_free_result']($result);
-			    }
-		    }
+                    // Update the amount of members awaiting approval - ignoring COPPA accounts, as you can't approve them until you get permission.
+                    $result = $smcFunc['db_query']('', '
+                        SELECT COUNT(*)
+                        FROM {db_prefix}members
+                        WHERE is_activated IN ({array_int:activation_status})',
+                        array(
+                            'activation_status' => array(3, 4),
+                        )
+                    );
+                    list ($changes['unapprovedMembers']) = $smcFunc['db_fetch_row']($result);
+                    $smcFunc['db_free_result']($result);
+                }
+            }
 
-		smfapi_updateSettings($changes);
-		break;
+        smfapi_updateSettings($changes);
+        break;
 
-		default:
+        default:
             return false;
-	}
+    }
 
-	return true;
+    return true;
 }
 
 /**
@@ -2920,13 +2921,13 @@ function smfapi_updateStats($type='member', $parameter1 = null, $parameter2 = nu
  */
 function smfapi_unHtmlspecialchars($string)
 {
-	static $translation;
+    static $translation;
 
-	if (!isset($translation)) {
-		$translation = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES)) + array('&#039;' => '\'', '&nbsp;' => ' ');
+    if (!isset($translation)) {
+        $translation = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES)) + array('&#039;' => '\'', '&nbsp;' => ' ');
     }
 
-	return strtr($string, $translation);
+    return strtr($string, $translation);
 }
 
 /**
@@ -2943,141 +2944,141 @@ function smfapi_unHtmlspecialchars($string)
  */
 function smfapi_deleteMessages($personal_messages, $folder = null, $owner = null)
 {
-	global $user_info, $smcFunc;
+    global $user_info, $smcFunc;
 
-	if ($owner === null) {
-		$owner = array($user_info['id']);
+    if ($owner === null) {
+        $owner = array($user_info['id']);
     } elseif (empty($owner)) {
-		return false;
+        return false;
     } elseif (!is_array($owner)) {
-		$owner = array($owner);
+        $owner = array($owner);
     }
 
-	if (null !== $personal_messages) {
-		if (empty($personal_messages) || !is_array($personal_messages)) {
-			return false;
+    if (null !== $personal_messages) {
+        if (empty($personal_messages) || !is_array($personal_messages)) {
+            return false;
         }
 
-		foreach ($personal_messages as $index => $delete_id) {
-			$personal_messages[$index] = (int) $delete_id;
+        foreach ($personal_messages as $index => $delete_id) {
+            $personal_messages[$index] = (int) $delete_id;
         }
 
-		$where = 'AND id_pm IN ({array_int:pm_list})';
-	} else {
-		$where = '';
+        $where = 'AND id_pm IN ({array_int:pm_list})';
+    } else {
+        $where = '';
     }
 
-	if ('sent' == $folder || null === $folder) {
-		$smcFunc['db_query']('', '
-			UPDATE {db_prefix}personal_messages
-			SET deleted_by_sender = {int:is_deleted}
-			WHERE id_member_from IN ({array_int:member_list})
-				AND deleted_by_sender = {int:not_deleted}' . $where,
-			array(
-				'member_list' => $owner,
-				'is_deleted' => 1,
-				'not_deleted' => 0,
-				'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
-			)
-		);
-	}
+    if ('sent' == $folder || null === $folder) {
+        $smcFunc['db_query']('', '
+            UPDATE {db_prefix}personal_messages
+            SET deleted_by_sender = {int:is_deleted}
+            WHERE id_member_from IN ({array_int:member_list})
+                AND deleted_by_sender = {int:not_deleted}' . $where,
+            array(
+                'member_list' => $owner,
+                'is_deleted' => 1,
+                'not_deleted' => 0,
+                'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
+            )
+        );
+    }
 
-	if ('sent' != $folder || null === $folder) {
-		// calculate the number of messages each member's gonna lose...
-		$request = $smcFunc['db_query']('', '
-			SELECT id_member, COUNT(*) AS num_deleted_messages, CASE WHEN is_read & 1 >= 1 THEN 1 ELSE 0 END AS is_read
-			FROM {db_prefix}pm_recipients
-			WHERE id_member IN ({array_int:member_list})
-				AND deleted = {int:not_deleted}' . $where . '
-			GROUP BY id_member, is_read',
-			array(
-				'member_list' => $owner,
-				'not_deleted' => 0,
-				'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
-			)
-		);
-		// ...and update the statistics accordingly - now including unread messages
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if ($row['is_read']) {
-				smfapi_updateMemberData($row['id_member'], array('instant_messages' => $where == '' ? 0 : 'instant_messages - '
+    if ('sent' != $folder || null === $folder) {
+        // calculate the number of messages each member's gonna lose...
+        $request = $smcFunc['db_query']('', '
+            SELECT id_member, COUNT(*) AS num_deleted_messages, CASE WHEN is_read & 1 >= 1 THEN 1 ELSE 0 END AS is_read
+            FROM {db_prefix}pm_recipients
+            WHERE id_member IN ({array_int:member_list})
+                AND deleted = {int:not_deleted}' . $where . '
+            GROUP BY id_member, is_read',
+            array(
+                'member_list' => $owner,
+                'not_deleted' => 0,
+                'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
+            )
+        );
+        // ...and update the statistics accordingly - now including unread messages
+        while ($row = $smcFunc['db_fetch_assoc']($request)) {
+            if ($row['is_read']) {
+                smfapi_updateMemberData($row['id_member'], array('instant_messages' => $where == '' ? 0 : 'instant_messages - '
                                  . $row['num_deleted_messages']));
             } else {
-				smfapi_updateMemberData($row['id_member'], array('instant_messages' => $where == '' ? 0 : 'instant_messages - '
+                smfapi_updateMemberData($row['id_member'], array('instant_messages' => $where == '' ? 0 : 'instant_messages - '
                                  . $row['num_deleted_messages'], 'unread_messages' => $where == '' ? 0 : 'unread_messages - '
                                  . $row['num_deleted_messages']));
             }
 
-			// if this is the current member we need to make their message count correct
-			if ($user_info['id'] == $row['id_member']) {
-				$user_info['messages'] -= $row['num_deleted_messages'];
-				if (!($row['is_read']))
-					$user_info['unread_messages'] -= $row['num_deleted_messages'];
-			}
-		}
+            // if this is the current member we need to make their message count correct
+            if ($user_info['id'] == $row['id_member']) {
+                $user_info['messages'] -= $row['num_deleted_messages'];
+                if (!($row['is_read']))
+                    $user_info['unread_messages'] -= $row['num_deleted_messages'];
+            }
+        }
 
-		$smcFunc['db_free_result']($request);
+        $smcFunc['db_free_result']($request);
 
-		// do the actual deletion
-		$smcFunc['db_query']('', '
-			UPDATE {db_prefix}pm_recipients
-			SET deleted = {int:is_deleted}
-			WHERE id_member IN ({array_int:member_list})
-				AND deleted = {int:not_deleted}' . $where,
-			array(
-				'member_list' => $owner,
-				'is_deleted' => 1,
-				'not_deleted' => 0,
-				'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
-			)
-		);
-	}
-
-	// if sender and recipients all have deleted their message, it can be removed
-	$request = $smcFunc['db_query']('', '
-		SELECT pm.id_pm AS sender, pmr.id_pm
-		FROM {db_prefix}personal_messages AS pm
-			LEFT JOIN {db_prefix}pm_recipients AS pmr ON (pmr.id_pm = pm.id_pm AND pmr.deleted = {int:not_deleted})
-		WHERE pm.deleted_by_sender = {int:is_deleted}
-			' . str_replace('id_pm', 'pm.id_pm', $where) . '
-		GROUP BY sender, pmr.id_pm
-		HAVING pmr.id_pm IS null',
-		array(
-			'not_deleted' => 0,
-			'is_deleted' => 1,
-			'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
-		)
-	);
-
-	$remove_pms = array();
-
-	while ($row = $smcFunc['db_fetch_assoc']($request)) {
-		$remove_pms[] = $row['sender'];
+        // do the actual deletion
+        $smcFunc['db_query']('', '
+            UPDATE {db_prefix}pm_recipients
+            SET deleted = {int:is_deleted}
+            WHERE id_member IN ({array_int:member_list})
+                AND deleted = {int:not_deleted}' . $where,
+            array(
+                'member_list' => $owner,
+                'is_deleted' => 1,
+                'not_deleted' => 0,
+                'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
+            )
+        );
     }
 
-	$smcFunc['db_free_result']($request);
+    // if sender and recipients all have deleted their message, it can be removed
+    $request = $smcFunc['db_query']('', '
+        SELECT pm.id_pm AS sender, pmr.id_pm
+        FROM {db_prefix}personal_messages AS pm
+            LEFT JOIN {db_prefix}pm_recipients AS pmr ON (pmr.id_pm = pm.id_pm AND pmr.deleted = {int:not_deleted})
+        WHERE pm.deleted_by_sender = {int:is_deleted}
+            ' . str_replace('id_pm', 'pm.id_pm', $where) . '
+        GROUP BY sender, pmr.id_pm
+        HAVING pmr.id_pm IS null',
+        array(
+            'not_deleted' => 0,
+            'is_deleted' => 1,
+            'pm_list' => $personal_messages !== null ? array_unique($personal_messages) : array(),
+        )
+    );
 
-	if (!empty($remove_pms)) {
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}personal_messages
-			WHERE id_pm IN ({array_int:pm_list})',
-			array(
-				'pm_list' => $remove_pms,
-			)
-		);
+    $remove_pms = array();
 
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}pm_recipients
-			WHERE id_pm IN ({array_int:pm_list})',
-			array(
-				'pm_list' => $remove_pms,
-			)
-		);
-	}
+    while ($row = $smcFunc['db_fetch_assoc']($request)) {
+        $remove_pms[] = $row['sender'];
+    }
 
-	// any cached numbers may be wrong now
-	smfapi_cachePutData('labelCounts:' . $user_info['id'], null, 720);
+    $smcFunc['db_free_result']($request);
 
-	return true;
+    if (!empty($remove_pms)) {
+        $smcFunc['db_query']('', '
+            DELETE FROM {db_prefix}personal_messages
+            WHERE id_pm IN ({array_int:pm_list})',
+            array(
+                'pm_list' => $remove_pms,
+            )
+        );
+
+        $smcFunc['db_query']('', '
+            DELETE FROM {db_prefix}pm_recipients
+            WHERE id_pm IN ({array_int:pm_list})',
+            array(
+                'pm_list' => $remove_pms,
+            )
+        );
+    }
+
+    // any cached numbers may be wrong now
+    smfapi_cachePutData('labelCounts:' . $user_info['id'], null, 720);
+
+    return true;
 }
 
 /**
@@ -3090,18 +3091,18 @@ function smfapi_deleteMessages($personal_messages, $folder = null, $owner = null
  */
 function smfapi_generateValidationCode()
 {
-	global $smcFunc, $modSettings;
+    global $smcFunc, $modSettings;
 
-	$request = $smcFunc['db_query']('get_random_number', '
-		SELECT RAND()',
-		array(
-		)
-	);
+    $request = $smcFunc['db_query']('get_random_number', '
+        SELECT RAND()',
+        array(
+        )
+    );
 
-	list ($dbRand) = $smcFunc['db_fetch_row']($request);
-	$smcFunc['db_free_result']($request);
+    list ($dbRand) = $smcFunc['db_fetch_row']($request);
+    $smcFunc['db_free_result']($request);
 
-	return substr(preg_replace('/\W/', '', sha1(microtime()
+    return substr(preg_replace('/\W/', '', sha1(microtime()
            . mt_rand() . $dbRand . $modSettings['rand_seed'])), 0, 10);
 }
 
@@ -3116,7 +3117,7 @@ function smfapi_generateValidationCode()
  */
 function smfapi_isOnline($username='')
 {
-	global $smcFunc;
+    global $smcFunc;
 
     $user_data = smfapi_getUserData($username);
 
@@ -3125,20 +3126,20 @@ function smfapi_isOnline($username='')
     }
 
     $request = $smcFunc['db_query']('', '
-		SELECT lo.id_member
-		FROM {db_prefix}log_online AS lo
-		WHERE lo.id_member = {int:id_member}',
-		array(
-			'id_member' => $user_data['id_member'],
-		)
-	);
+        SELECT lo.id_member
+        FROM {db_prefix}log_online AS lo
+        WHERE lo.id_member = {int:id_member}',
+        array(
+            'id_member' => $user_data['id_member'],
+        )
+    );
 
     if ($smcFunc['db_num_rows']($request) == 0) {
         return false;
-	} else {
+    } else {
         $smcFunc['db_free_result']($request);
         return true;
-	}
+    }
 }
 
 /**
@@ -3198,12 +3199,12 @@ function smfapi_logOnline($username='')
         array('session')
     );
 
-	// Mark the session as being logged.
-	$_SESSION['log_time'] = time();
+    // Mark the session as being logged.
+    $_SESSION['log_time'] = time();
 
-	// Well, they are online now.
-	if (empty($_SESSION['timeOnlineUpdated'])) {
-		$_SESSION['timeOnlineUpdated'] = time();
+    // Well, they are online now.
+    if (empty($_SESSION['timeOnlineUpdated'])) {
+        $_SESSION['timeOnlineUpdated'] = time();
     }
 
     return true;

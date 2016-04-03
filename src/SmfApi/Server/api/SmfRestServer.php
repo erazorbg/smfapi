@@ -44,6 +44,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
  **********************************************************************************/
 namespace SmfApi\Server;
+use Exception;
 
 class SmfRestServer
 {
@@ -71,6 +72,19 @@ class SmfRestServer
         foreach ($request as $k => $v) {
             $this->$k = $v;
         }
+
+        $this->getRoute()->getMethod();
+        if ($this->validateSecretKey()) {
+            try {
+                $this->callMethod();
+            } catch (Exception $e) {
+                $this->error = $e->getMessage();
+            }
+        } else {
+            $this->error = 'Secret Key invalid';
+        }
+
+        $this->renderOutput();
     }
 
     /**
@@ -164,12 +178,10 @@ class SmfRestServer
     protected function getRoute()
     {
         $cwd   = getcwd();
+        $cwd   = str_replace("\\", '/', $cwd);
         $cwd   = str_replace($_SERVER['DOCUMENT_ROOT'], '', $cwd);
         $route = str_replace($cwd, '', $_SERVER['REQUEST_URI']);
-        
-        if ('/' == substr($route, 0, 1)) {
-            $route = substr($route, 1);
-        }
+        $route = trim($route, '/');
         
         $this->route = $route;
 
@@ -215,7 +227,7 @@ class SmfRestServer
             @include($apiScript);
             ob_get_clean();
         } else {
-            throw new Exception('API file not found');
+            throw new \Exception('API file not found');
         }
         
         return $this;
@@ -238,9 +250,9 @@ class SmfRestServer
             try {
                 $this->loadApi();
             } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+                throw new \Exception($e->getMessage());
             }
-            throw new Exception('Try again, the settings path should be saved now.');
+            throw new \Exception('Try again, the settings path should be saved now.');
         }
 
         $ssiScript = str_replace('Settings.php', 'SSI.php', $settings_path);
@@ -249,7 +261,7 @@ class SmfRestServer
         if (file_exists($ssiScript)) {
             require_once "$ssiScript";
         } else {
-            throw new Exception('SSI file not found');
+            throw new \Exception('SSI file not found');
         }
         //loadSession();
         
@@ -279,14 +291,15 @@ class SmfRestServer
      */
     protected function callMethod()
     {
-        if (method_exists('SmfRestServer', $this->method)) {
+        print $this->method;
+        if (method_exists($this, $this->method)) {
             try {
                 call_user_func(array($this, $this->method));
             } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+                throw new \Exception($e->getMessage());
             }
         } else {
-            throw new Exception('Unknown method '. $this->method . ' was called');
+            throw new \Exception('Unknown method '. $this->method . ' was called');
         }
     }
 
@@ -337,7 +350,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         global $user_info, $smcFunc;
@@ -372,7 +385,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         global $sourcedir;
         require_once($sourcedir . '/Subs-Post.php');
@@ -401,7 +414,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         global $sourcedir;
         require_once($sourcedir . '/Subs-Post.php');
@@ -429,7 +442,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->data = smfapi_getUserData($this->identifier);
@@ -448,7 +461,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         global $user_info;
@@ -469,9 +482,9 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
-        
+
         $this->data = smfapi_login($this->identifier, $this->cookieLength);
     }
 
@@ -488,7 +501,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->data = smfapi_authenticate($this->username, $this->password, $this->encrypted);
@@ -507,7 +520,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->data = smfapi_logout($this->username);
@@ -526,7 +539,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->users = unserialize($this->users);
@@ -547,7 +560,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->regOptions = unserialize($this->regOptions);
@@ -568,7 +581,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->data = smfapi_logError($this->error_message, $this->error_type, $this->file, $this->line);
@@ -587,7 +600,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->info = unserialize($this->info);
@@ -608,7 +621,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->data = smfapi_isOnline($this->identifier);
@@ -627,7 +640,7 @@ class SmfRestServer
         try {
             $this->loadApi();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->data = smfapi_logOnline($this->identifier);
@@ -650,7 +663,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         ob_start();
@@ -674,7 +687,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -700,7 +713,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -726,7 +739,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -752,7 +765,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->include_boards = unserialize($this->include_boards);
@@ -781,7 +794,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->post_ids = unserialize($this->post_ids);
@@ -809,7 +822,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->exclude_boards = unserialize($this->exclude_boards);
@@ -838,7 +851,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -864,7 +877,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -890,7 +903,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -916,7 +929,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -942,7 +955,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -968,7 +981,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->member_ids = unserialize($this->member_ids);
@@ -996,7 +1009,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1022,7 +1035,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->query_where_params = unserialize($this->query_where_params);
@@ -1050,7 +1063,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1076,7 +1089,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1102,7 +1115,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1128,7 +1141,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1154,7 +1167,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1180,7 +1193,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1206,7 +1219,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1232,7 +1245,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1258,7 +1271,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1284,7 +1297,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1310,7 +1323,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1336,7 +1349,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1362,7 +1375,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1388,7 +1401,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         if ('echo' == $this->output_method) {
@@ -1414,7 +1427,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
 
         $this->data = ssi_checkPassword($this->id, $this->password, $this->is_username);
@@ -1433,7 +1446,7 @@ class SmfRestServer
         try {
             $this->loadSSI();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
         
         $this->attachment_ext = unserialize($this->attachment_ext);
