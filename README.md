@@ -75,7 +75,7 @@ RewriteEngine on
 RewriteRule .* index.php [L]
  
 ```
-  * Set an API key in the `SmfRestServer.php` file:
+  * Set an API key in the `index.php` file:
 
 ``` php 
 define ('SECRET_KEY', 'Put your secret key here'); // set your secret key here
